@@ -17,6 +17,7 @@ import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueInputJsonGenerator;
+import com.google.common.base.CharMatcher;
 
 import sopra.grenoble.jiraLoader.exceptions.ComponentNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
@@ -108,10 +109,15 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 		}
 		
 		IssueInputBuilder issueInB = new IssueInputBuilder(jiraProject.getKey(), issueType.getId());
-		//set resume => mandatory
-		issueInB.setSummary(resume);
+		
+		//set resume => mandatoryx
+		String cleanResume = (resume != null) ? resume.replaceAll("\r", " ").replaceAll("\n", " ") : null;
+		issueInB.setSummary(cleanResume);
+		
 		//set description (optional)
-		issueInB.setDescription(description);
+		String cleanDesc = (description != null) ? description.replaceAll("\r", " ").replaceAll("\n", " ") : null;
+		issueInB.setDescription(cleanDesc);
+		
 		//set priority (optional)
 		if (priorityName != null) {
 			Priority priority = priorityLoader.getElement(priorityName);

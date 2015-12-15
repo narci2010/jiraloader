@@ -39,7 +39,7 @@ public class XslsFileReaderAndWriterTest {
 	
 	@Test
 	public void createWithCorrectFile() throws IOException {
-		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("Import_JIRA_TEST1.xlsx");
+		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("excelTestFiles/Import_JIRA_TEST1.xlsx");
 		assertNotNull(nonExcelFileUrl);
 		
 		File nonExcelFile = new File(nonExcelFileUrl.getPath());
@@ -51,7 +51,7 @@ public class XslsFileReaderAndWriterTest {
 	
 	@Test
 	public void readSecondLine() throws IOException {
-		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("Import_JIRA_TEST1.xlsx");
+		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("excelTestFiles/Import_JIRA_TEST1.xlsx");
 		File nonExcelFile = new File(nonExcelFileUrl.getPath());
 		XslsFileReaderAndWriter xlsrw = new XslsFileReaderAndWriter(nonExcelFile);
 		xlsrw.openSheet(1);
@@ -61,7 +61,7 @@ public class XslsFileReaderAndWriterTest {
 	
 	@Test
 	public void isLastRowTest() throws IOException {
-		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("Import_JIRA_TEST1.xlsx");
+		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("excelTestFiles/Import_JIRA_TEST1.xlsx");
 		File nonExcelFile = new File(nonExcelFileUrl.getPath());
 		XslsFileReaderAndWriter xlsrw = new XslsFileReaderAndWriter(nonExcelFile);
 		xlsrw.openSheet(1);

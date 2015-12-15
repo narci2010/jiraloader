@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sopra.opal</groupId>
 	<artifactId>JiraLoader</artifactId>
-	<version>1.0.RC02</version>
+	<version>1.0.RC03</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -39,11 +39,8 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-devtools</artifactId> 
+			<optional>true</optional> </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -56,7 +53,7 @@
 			<artifactId>jira-rest-java-client</artifactId>
 			<version>1.2-m01</version>
 		</dependency>
-		
+
 		<!-- APACHE POI (Excel) DEPENDENCY -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -66,12 +63,13 @@
 
 		<!-- JAVA FX DEPENDENCY -->
 		<dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx</artifactId>
-            <version>2.0</version>
-            <systemPath>${basedir}/src/main/lib/jfxrt.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>javafx</artifactId>
+			<version>2.0</version>
+			<systemPath>${basedir}/src/main/lib/jfxrt.jar</systemPath>
+			<scope>system</scope>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<resources>
