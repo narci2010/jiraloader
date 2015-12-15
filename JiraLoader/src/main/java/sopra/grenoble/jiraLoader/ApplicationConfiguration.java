@@ -9,9 +9,14 @@ import org.springframework.context.annotation.Configuration;
 import com.atlassian.jira.rest.client.NullProgressMonitor;
 import com.atlassian.jira.rest.client.ProgressMonitor;
 
+/**
+ * @author cmouilleron
+ *
+ */
 @Configuration
 @ComponentScan
 public class ApplicationConfiguration {
+	
 	public static final Logger LOG = LoggerFactory.getLogger(ApplicationConfiguration.class);
 	
 	
