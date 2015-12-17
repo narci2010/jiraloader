@@ -86,5 +86,45 @@ public class IssueEpicServiceTest {
 			assertFalse(epicSrv.isExist(bi.getKey(), projectTestName));
 		}
 	}
+	
 
+	@Test
+	public void getByName() throws JiraGeneralException {
+		BasicIssue bi = epicSrv.createEpic(projectTestName, "EPIC TEST DEV", componentName);
+		assertNotNull(bi);
+		
+		try {
+			BasicIssue biGet = epicSrv.getByName("EPIC TEST DEV", projectTestName);
+			assertNotNull(biGet);
+			assertEquals(biGet.getId(), bi.getId());
+		} finally {
+			epicSrv.removeIssue(bi.getKey(), true);
+		}
+	}
+	
+	@Test
+	public void getByNameWithAlmostSameEpic() throws JiraGeneralException {
+		BasicIssue bi2 = epicSrv.createEpic(projectTestName, "EPIC TEST DEV 2", componentName);
+		assertNotNull(bi2);
+		BasicIssue bi3 = epicSrv.createEpic(projectTestName, "EPIC TEST 3 DEV", componentName);
+		assertNotNull(bi3);
+		BasicIssue bi4 = epicSrv.createEpic(projectTestName, "EPIC 4 TEST DEV", componentName);
+		assertNotNull(bi4);
+		BasicIssue bi = epicSrv.createEpic(projectTestName, "EPIC TEST DEV", componentName);
+		assertNotNull(bi);
+		BasicIssue bi5 = epicSrv.createEpic(projectTestName, "EPIC TEST DEV 5", componentName);
+		assertNotNull(bi5);
+		
+		try {
+			BasicIssue biGet = epicSrv.getByName("EPIC TEST DEV", projectTestName);
+			assertNotNull(biGet);
+			assertEquals(biGet.getId(), bi.getId());
+		} finally {
+			epicSrv.removeIssue(bi.getKey(), true);
+			epicSrv.removeIssue(bi2.getKey(), true);
+			epicSrv.removeIssue(bi3.getKey(), true);
+			epicSrv.removeIssue(bi4.getKey(), true);
+			epicSrv.removeIssue(bi5.getKey(), true);
+		}
+	}
 }

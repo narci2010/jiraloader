@@ -42,8 +42,14 @@ public class IssueEpicService extends IssueAbstractGenericService implements IIs
 		String jpqlFormat = String.format("issuetype = " + JiraIssuesTypeLoader.JIRA_EPIC_ISSUE_TYPE_NAME + " AND summary ~ '%s'", epicName);
 		SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
 		for (BasicIssue epicIssue : sr.getIssues()) {
-			if (isExist(epicIssue.getKey(), projectName)) {
-				return epicIssue;
+			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
+			try {
+				Issue is = getByKey(epicIssue.getKey(), projectName);
+				if (is.getSummary().compareTo(epicName) == 0) {
+					return is;
+				}
+			} catch (IssueNotFoundException | JiraIssueTypeException e) {
+				LOG.warn("Unable to find the Epic with KEY : " + epicIssue.getKey());
 			}
 		}
 		return null;
