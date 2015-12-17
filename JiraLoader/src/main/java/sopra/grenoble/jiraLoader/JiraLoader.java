@@ -100,6 +100,7 @@ public class JiraLoader {
 
 		// start the thread
 		Thread thread = new Thread(task);
+		thread.setPriority(Thread.MIN_PRIORITY);
 		thread.start();
 	}
 
@@ -154,6 +155,7 @@ public class JiraLoader {
 		boolean allLineOK = true;
 		
 		while (!excelLoader.isLastRow()) {
+			Thread.yield();
 			final Row row = excelLoader.readNextRow();
 
 			try {
