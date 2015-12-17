@@ -18,6 +18,7 @@ import com.atlassian.jira.rest.client.domain.Version;
 
 import sopra.grenoble.jiraLoader.ApplicationConfiguration;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
+import sopra.grenoble.jiraLoader.exceptions.JiraEpicNotFound;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.VersionNotFoundException;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
@@ -116,11 +117,24 @@ public class IssueServiceTest {
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
+	/**
+	 * @throws JiraGeneralException
+	 */
+	@Test(expected=VersionNotFoundException.class)
+	public void createStoryWithBadVersion() throws JiraGeneralException {
+		issueSrv.createStory(projectTestName, null, "BADVERSION", "resume", "description", "urgent", componentName);
+	}
+	
 	@Test
 	public void createStoryWithSpecialChar() throws JiraGeneralException {
 		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "resume\nOK", "description\nOK", "urgent", componentName);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
+	}
+	
+	@Test(expected=JiraEpicNotFound.class)
+	public void createStoryWithBadEpics() throws JiraGeneralException {
+		issueSrv.createStory(projectTestName, "LOLOLOLO", v.getName(), "resume", "description\nOK", "urgent", componentName);
 	}
 	
 	@Test

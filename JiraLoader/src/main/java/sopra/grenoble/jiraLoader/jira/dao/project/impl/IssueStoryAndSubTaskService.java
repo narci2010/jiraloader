@@ -18,6 +18,7 @@ import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
+import sopra.grenoble.jiraLoader.exceptions.JiraEpicNotFound;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.VersionNotFoundException;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraFieldLoader;
@@ -44,6 +45,9 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		if (epicName != null) {
 			//get epic based on the name
 			BasicIssue epicI = epicSrv.getByName(epicName, projectName);
+			if (epicI == null) {
+				throw new JiraEpicNotFound();
+			}
 			addEpicLink(iib, epicI.getKey());
 		}
 		
