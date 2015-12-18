@@ -18,13 +18,16 @@ public class Main {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	
+	/**
+	 * Usage function
+	 */
 	private static void Usage() {
-		System.out.println("JiraLoader : bad input parameters. Five parameter must be passed");
-		System.out.println("	1 - Jira URL : try http://forge.corp.sopra/jira1");
-		System.out.println("	2 - username");
-		System.out.println("	3 - password");
-		System.out.println("	4 - JIRA project name");
-		System.out.println("	5 - Excel file path");
+		LOG.error("JiraLoader : bad input parameters. Five parameter must be passed");
+		LOG.error("	1 - Jira URL : try http://forge.corp.sopra/jira1");
+		LOG.error("	2 - username");
+		LOG.error("	3 - password");
+		LOG.error("	4 - JIRA project name");
+		LOG.error("	5 - Excel file path");
 	}
 	
 	/**
@@ -42,7 +45,7 @@ public class Main {
 		
 		if (args.length != 5) {
 			LOG.error("JiraLoader : No parameter has been passed. The excel file path should be passed");
-			System.out.println("JiraLoader : No parameter has been passed. The excel file path should be passed");
+			Usage();
 			System.exit(0);
 		}
 			

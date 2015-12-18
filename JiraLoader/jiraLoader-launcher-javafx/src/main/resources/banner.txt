@@ -10,4 +10,4 @@
  \______/ |__/|__/      \_______/      |________/ \______/  \_______/ \_______/ \_______/|__/      
                                                                                                    
                                                                                                   
- :: By OPAL TEAM ::        (${application.version})
+ :: By OPAL TEAM ::        (${jiraLoader.releaseName})
