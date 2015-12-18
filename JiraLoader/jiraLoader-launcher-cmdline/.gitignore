@@ -2,3 +2,4 @@
 /jiraLoader.log
 /jiraLoader-launcher-cmdline-*.jar
 .classpath
+.project

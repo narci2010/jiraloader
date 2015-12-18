@@ -3,3 +3,4 @@
 /jiraLoader-launcher-javafx-*.jar
 .classpath
 .settings
+.project
