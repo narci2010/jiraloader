@@ -1,3 +1,5 @@
 /target/
 /jiraLoader.log
 /jiraLoader-launcher-javafx-*.jar
+.classpath
+.settings
