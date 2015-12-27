@@ -2,8 +2,6 @@ package sopra.grenoble.jiraLoaderfx;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.rest.client.domain.BasicProject;
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -75,23 +72,11 @@ public class JiraController {
 
 	}
 
-	public void appendText(String str) {
-		Platform.runLater(() -> textArea.appendText(str));
-	}
-
 	@FXML
 	private void initialize() {
 		tfLogin.setText(configurationBean.getUsername());
 		tfJiraUri.setText(configurationBean.getUri());
 
-		OutputStream out = new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {
-				appendText(String.valueOf((char) b));
-			}
-		};
-		System.setOut(new PrintStream(out, true));
-		System.setErr(new PrintStream(out, true));
 	}
 
 	@FXML
@@ -191,7 +176,7 @@ public class JiraController {
 	}
 
 	/**
-	 * Is called by the main application to give a reference back to itself.
+	 * Is called by the main application to give a reference on itself.
 	 * 
 	 * @param mainApp
 	 */
@@ -259,21 +244,20 @@ public class JiraController {
 		this.btConnect = btConnect;
 	}
 
-	// public ChoiceBoxListCell<String> getCbProjectChooser() {
-	// return cbProjectChooser;
-	// }
-	//
-	// public void setCbProjectChooser(ChoiceBoxListCell<String>
-	// cbProjectChooser) {
-	// this.cbProjectChooser = cbProjectChooser;
-	// }
-
 	public JiraUserConfiguration getConfigurationBean() {
 		return configurationBean;
 	}
 
 	public void setConfigurationBean(JiraUserConfiguration configurationBean) {
 		this.configurationBean = configurationBean;
+	}
+
+	public TextArea getTextArea() {
+		return textArea;
+	}
+
+	public void setTextArea(TextArea textArea) {
+		this.textArea = textArea;
 	}
 
 }

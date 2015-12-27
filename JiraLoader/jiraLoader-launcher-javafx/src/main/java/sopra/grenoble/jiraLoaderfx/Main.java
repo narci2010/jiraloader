@@ -15,9 +15,7 @@ public class Main {
 	
 	
 	/**
-	 * Main function
-	 * @param args
-	 * @throws Exception 
+	 * Main function 
 	 */
 	public static void main(String[] args) throws Exception {
 		LOG.info("Starting the application");
