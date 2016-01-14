@@ -98,6 +98,32 @@ public class IssueServiceTest {
 		}
 	}
 	
+	@Test
+	public void createStoryAndSubTaskWithoutPriority() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "resume", "description", null, componentName);
+		assertNotNull(bi);
+		//Create sub task
+		try {
+			BasicIssue subTask = issueSrv.createSubTask(projectTestName, bi.getKey(), "Sous-tâche", "sous tach resume", "sous tach desc", null, "1d", componentName);
+			assertNotNull(subTask);
+		} finally {
+			issueSrv.removeIssue(bi.getKey(), true);
+		}
+	}
+	
+	@Test
+	public void createStoryAndSubTaskWithoutDescriptionAndDeleteAll() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "resume", null, "urgent", componentName);
+		assertNotNull(bi);
+		//Create sub task
+		try {
+			BasicIssue subTask = issueSrv.createSubTask(projectTestName, bi.getKey(), "Sous-tâche", "sous tach resume", null, "urgent", "1d", componentName);
+			assertNotNull(subTask);
+		} finally {
+			issueSrv.removeIssue(bi.getKey(), true);
+		}
+	}
+	
 	@Test(expected=IssueNotFoundException.class)
 	public void createSubTaskWithoutParent() throws JiraGeneralException {
 		issueSrv.createSubTask(projectTestName, null, "Sous-tâche", "sous tach resume", "sous tach desc", "urgent", "1d", componentName);
@@ -106,6 +132,20 @@ public class IssueServiceTest {
 	@Test
 	public void createStoryWithEpic() throws JiraGeneralException {
 		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "resume", "description", "urgent", componentName);
+		assertNotNull(bi);
+		issueSrv.removeIssue(bi.getKey(), true);
+	}
+	
+	@Test
+	public void createStoryWithEpicWithoutDescription() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "resume", null, "urgent", componentName);
+		assertNotNull(bi);
+		issueSrv.removeIssue(bi.getKey(), true);
+	}
+	
+	@Test
+	public void createStoryWithoutPriority() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "resume", "description", null, componentName);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}

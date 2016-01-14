@@ -74,6 +74,12 @@ public abstract class GenericModel {
 		this.estimation = getStringValueFromRow(row,8);
 	}
 	
+	/**
+	 * Extract from excel row the string value. If the cell is empty, return null. If the cell contain a "" string, return null
+	 * @param row
+	 * @param position
+	 * @return
+	 */
 	private String getStringValueFromRow(Row row, int position) {
 		Cell cell = row.getCell(position);
 		if (cell == null) {

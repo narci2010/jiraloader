@@ -11,8 +11,6 @@ public class SubTasks extends GenericModel {
 		if (epicName == null) return false;
 		if (versionName == null) return false;
 		if (resume == null) return false;
-		if (descriptif == null) return false;
-		if (priority == null) return false;
 		if (composantName == null) return false;
 		return true;
 	}

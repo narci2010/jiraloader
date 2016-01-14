@@ -145,9 +145,11 @@ public class JiraLoader {
 		// skip header
 		excelLoader.setRowPosition(1);
 		boolean allLineOK = true;
+		boolean atLeastOneDataFound = false;
 
 		while (!excelLoader.isLastRow()) {
-			Thread.yield();
+			atLeastOneDataFound = true;
+
 			final Row row = excelLoader.readNextRow();
 
 			try {
@@ -163,13 +165,18 @@ public class JiraLoader {
 					allLineOK = false;
 				}
 			} catch (JiraGeneralException e) {
-				LOG.error("Row <" + row.getRowNum() + "> JIRA has raised an exception. I can't do anything for you...",
-						e);
+				LOG.error("Row <" + row.getRowNum() + "> JIRA has raised an exception. I can't do anything for you...",e);
 				allLineOK = false;
 			} catch (UnexpectedTypeLineException e) {
 				LOG.error("Row <" + row.getRowNum() + "> The typeDemande value is not support by the application", e);
 				allLineOK = false;
 			}
+		}
+		
+		if (atLeastOneDataFound == false) {
+			//no line in the excel file
+			LOG.error("No line has been found in the excel file. Please check your second excel sheet");
+			allLineOK = false;
 		}
 		return allLineOK;
 	}
