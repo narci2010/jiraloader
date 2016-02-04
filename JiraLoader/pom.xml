@@ -16,14 +16,14 @@
 		<!-- specify the default env configuration folder -->
 		<envConfFolder>src/main/config</envConfFolder>
 
-		<jiraLoader.releaseName>1.0.RC04</jiraLoader.releaseName>
+		<jiraLoader.releaseName>1.0.RC05</jiraLoader.releaseName>
 	</properties>
 
 	<!-- Inherit defaults from Spring Boot -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.3.0.RELEASE</version>
+		<version>1.3.2.RELEASE</version>
 	</parent>
 
 	<dependencyManagement>
