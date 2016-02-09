@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import sopra.grenoble.jiraLoader.JiraLoader;
-import sopra.grenoble.jiraLoader.JiraUserConfiguration;
+import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.spring.ApplicationContextProvider;
 
@@ -63,7 +63,7 @@ public class Main {
 		LOG.info("Starting application in command line MODE");
 
 		//set configuration bean
-		JiraUserConfiguration juc = ApplicationContextProvider.getApplicationContext().getBean(JiraUserConfiguration.class);
+		JiraUserDatas juc = ApplicationContextProvider.getApplicationContext().getBean(JiraUserDatas.class);
 		
 		juc.setUri(args[0]);
 		juc.setUsername(args[1]);

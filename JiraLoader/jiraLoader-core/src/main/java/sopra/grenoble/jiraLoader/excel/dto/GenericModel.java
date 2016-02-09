@@ -2,11 +2,12 @@ package sopra.grenoble.jiraLoader.excel.dto;
 
 import java.io.IOException;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sopra.grenoble.jiraLoader.excel.loaders.ExcelRowUtils;
 
 /**
  * @author cmouilleron
@@ -63,33 +64,15 @@ public abstract class GenericModel {
 	 * @param row
 	 */
 	public void loadRow(Row row) {
-		this.key = getStringValueFromRow(row,0);
-		this.typeDemande = getStringValueFromRow(row,1);
-		this.epicName = getStringValueFromRow(row,2);
-		this.versionName = getStringValueFromRow(row,3);
-		this.resume = getStringValueFromRow(row,4);
-		this.descriptif = getStringValueFromRow(row,5);
-		this.priority = getStringValueFromRow(row,6);
-		this.composantName = getStringValueFromRow(row,7);
-		this.estimation = getStringValueFromRow(row,8);
-	}
-	
-	/**
-	 * Extract from excel row the string value. If the cell is empty, return null. If the cell contain a "" string, return null
-	 * @param row
-	 * @param position
-	 * @return
-	 */
-	private String getStringValueFromRow(Row row, int position) {
-		Cell cell = row.getCell(position);
-		if (cell == null) {
-			return null;
-		}
-		String value = cell.getStringCellValue();
-		if (value == null || value.compareTo("") == 0) {
-			return null;
-		}
-		return value;
+		this.key = ExcelRowUtils.getStringValueFromRow(row,0).orElse(null);
+		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row,1).orElse(null);
+		this.epicName = ExcelRowUtils.getStringValueFromRow(row,2).orElse(null);
+		this.versionName = ExcelRowUtils.getStringValueFromRow(row,3).orElse(null);
+		this.resume = ExcelRowUtils.getStringValueFromRow(row,4).orElse(null);
+		this.descriptif = ExcelRowUtils.getStringValueFromRow(row,5).orElse(null);
+		this.priority = ExcelRowUtils.getStringValueFromRow(row,6).orElse(null);
+		this.composantName = ExcelRowUtils.getStringValueFromRow(row,7).orElse(null);
+		this.estimation = ExcelRowUtils.getStringValueFromRow(row,8).orElse(null);
 	}
 	
 	@Override

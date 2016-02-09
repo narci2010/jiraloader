@@ -1,4 +1,4 @@
-package sopra.grenoble.jiraLoader;
+package sopra.grenoble.jiraLoader.configurationbeans;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -6,23 +6,40 @@ import org.springframework.stereotype.Component;
 
 @EnableAutoConfiguration
 @Component
-public class JiraUserConfiguration {
+public class JiraUserDatas {
 
-
+	/**
+	 * Username used for the Jira connection
+	 */
 	@Value("${jira.username}")
 	private String username;
 
+	/**
+	 * Password used for the Jira connection
+	 */
 	@Value("${jira.password}")
 	private String password;
 
+	/**
+	 * The Jira URL endpoint
+	 */
 	@Value("${jira.uri}")
 	private String uri;
 
+	/**
+	 * The Jira project name to update 
+	 */
 	@Value("${project.name}")
 	private String projectName;
 	
+	/**
+	 * To create task and sub tasks, the program needs to rely these both elements
+	 * to a story. This parameter is used to keep in memory the last story used while the injection.
+	 */
 	private String lastStoryKey;
 
+	
+	
 	public String getUsername() {
 		return username;
 	}

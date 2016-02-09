@@ -40,7 +40,7 @@ import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.ApacheHttpClientHandler;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
-import sopra.grenoble.jiraLoader.JiraUserConfiguration;
+import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.parsers.IMetadataRestClientV2;
 import sopra.grenoble.jiraLoader.jira.parsers.MetadataRestV2Client;
 
@@ -80,7 +80,7 @@ public class JiraRestClientV2Impl implements IJiraRestClientV2 {
 	
 	
 	@Autowired
-	private JiraUserConfiguration configuration;
+	private JiraUserDatas configuration;
 	
 	
 	@Override

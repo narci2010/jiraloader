@@ -1,5 +1,7 @@
 package sopra.grenoble.jiraLoader.wrappers;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import com.atlassian.jira.rest.client.domain.BasicIssue;
 
 import sopra.grenoble.jiraLoader.excel.dto.Story;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
-import sopra.grenoble.jiraLoader.jira.dao.project.impl.IssueStoryAndSubTaskService;
+import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
 
 @Service("wrapper_Story")
 public class StoryWrapper extends AbstractWrapper<Story> {
@@ -17,7 +19,7 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 	private static final Logger LOG = LoggerFactory.getLogger(StoryWrapper.class);
 	
 	@Autowired
-	private IssueStoryAndSubTaskService storySrv;
+	private IIssueService storySrv;
 	
 	/**
 	 * Default constructor
@@ -31,11 +33,42 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 
 	@Override
 	public void insertInJira() throws JiraGeneralException {
-		BasicIssue bi = storySrv.createStory(confBean.getProjectName(), dtoExcelModel.epicName, dtoExcelModel.versionName, dtoExcelModel.resume, dtoExcelModel.descriptif, dtoExcelModel.priority, dtoExcelModel.composantName);
-		LOG.info("Story has been created with KEY : " + bi.getKey());
+		Optional<BasicIssue> bi = Optional.empty();
+		//if option checkStoryExist is activated, check if the story is existing in JIRA
+		if (excelConfigurationDatas.isSearchStoryByNameBeforeCreate()) {
+			LOG.debug("isSearchStoryByNameBeforeCreate activated. Looking for issue with name : " + dtoExcelModel.resume);
+			bi = getStoryIfExist(dtoExcelModel.resume, jiraUserDatas.getProjectName());
+		}
+		
+		if (bi.isPresent()) {
+			LOG.info("Story already exist in JIRA. Only update excel file");
+			dtoExcelModel.key = String.valueOf(bi.get().getKey());
+			updateRowInJira();
+		} else {
+			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), dtoExcelModel.epicName, dtoExcelModel.versionName, dtoExcelModel.resume, dtoExcelModel.descriptif, dtoExcelModel.priority, dtoExcelModel.composantName));
+			LOG.info("Story has been created with KEY : " + bi.get().getKey());
+		}
 
 		//update the DTO key
-		this.dtoExcelModel.key = String.valueOf(bi.getKey());
+		this.dtoExcelModel.key = String.valueOf(bi.get().getKey());
 	}
 
+	@Override
+	public void updateRowInJira() {
+		LOG.info("Story update action is not allowed - Update function is not implemented... Maybe in next release");
+	}
+	
+	
+	/**
+	 * Return the {@link BasicIssue}
+	 * @param fullStoryName
+	 * @param epicName
+	 * @param projectName
+	 * @return
+	 */
+	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) {
+		String storyName = fullStoryName.split("\\|")[0].trim();
+		return storySrv.getByStartingName(storyName, projectName);
+	}
+	
 }

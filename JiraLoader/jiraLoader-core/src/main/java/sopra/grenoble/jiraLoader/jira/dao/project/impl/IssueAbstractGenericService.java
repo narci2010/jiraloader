@@ -160,22 +160,4 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 		LOG.info("New issue has been created with key : " + issueCreated.getKey());
 		return issueCreated;
 	}
-	
-	/**
-	 * Generic function to execute a JQL request on JIRA
-	 * @param jpqlRequest
-	 * @return
-	 */
-	protected boolean isExistGen(String jpqlRequest) {
-		LOG.debug("Running JPQL command : " + jpqlRequest);
-		try {
-			SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlRequest, pm);
-			if (sr.getTotal() != 0) {
-				return true;
-			}
-		} catch (RuntimeException e) {
-			return false;
-		}
-		return false;
-	}
 }

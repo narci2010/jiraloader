@@ -3,6 +3,7 @@ package sopra.grenoble.jiraLoader.jira.dao.project.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Field;
 import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.domain.Version;
 import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
@@ -20,6 +22,7 @@ import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraEpicNotFound;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
+import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
 import sopra.grenoble.jiraLoader.exceptions.VersionNotFoundException;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraFieldLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
@@ -139,6 +142,30 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		List<Version> versions = new ArrayList<>();
 		versions.add(v);
 		iib.setAffectedVersions(versions);
+	}
+	
+	/**
+	 * Search on JIRA if a issue's name is starting by the name passed in parameter
+	 * @param issueName
+	 * @param epicName
+	 * @param projectName
+	 * @return
+	 */
+	public Optional<BasicIssue> getByStartingName(String issueName, String projectName) {
+		String jpqlFormat = String.format("issuetype = " + JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME + " AND summary ~ '%s'", issueName);
+		SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
+		for (BasicIssue epicIssue : sr.getIssues()) {
+			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
+			try {
+				Issue is = getByKey(epicIssue.getKey(), projectName);
+				LOG.debug("Found possible match issue with name " + is.getSummary()); 
+				if (is.getSummary().startsWith(issueName)) {
+					return Optional.of(is);
+				}
+			} catch (IssueNotFoundException | JiraIssueTypeException e) {
+			}
+		}
+		return Optional.empty();
 	}
 	
 }

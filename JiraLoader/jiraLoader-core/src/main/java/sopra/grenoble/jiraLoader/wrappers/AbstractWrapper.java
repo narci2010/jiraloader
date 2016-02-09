@@ -9,7 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import sopra.grenoble.jiraLoader.JiraUserConfiguration;
+import sopra.grenoble.jiraLoader.configurationbeans.ExcelDatas;
+import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IProjectService;
@@ -45,7 +46,13 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 	private IProjectService projectService;
 	
 	@Autowired
-	protected JiraUserConfiguration confBean;
+	protected JiraUserDatas jiraUserDatas;
+	
+	@Autowired
+	protected ExcelDatas excelConfigurationDatas;
+	
+	@Autowired
+	protected ExcelDatas excelDatas;
 	
 
 	/**
@@ -107,7 +114,7 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 		//validate JIRA requirements
 		if (dtoExcelModel.composantName != null) {
 			//composantName must exist in JIRA
-			if(!projectService.isComponentNameExistsInProject(confBean.getProjectName(), dtoExcelModel.composantName)) {
+			if(!projectService.isComponentNameExistsInProject(jiraUserDatas.getProjectName(), dtoExcelModel.composantName)) {
 				LOG.info("Line <" + excelRow.getRowNum() + "> is not valid - Component name <" + dtoExcelModel.composantName + "> does not exist in JIRA");
 				return false;
 			}
@@ -148,7 +155,5 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 		this.updateRowLineInExcel();
 	}
 	
-	public void updateRowInJira() {
-		LOG.info("Line <" + excelRow.getRowNum() + "> is skipped - Update function is not implemented... Maybe in next release");
-	}
+	public abstract void updateRowInJira();
 }

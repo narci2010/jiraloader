@@ -32,11 +32,16 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 
 	@Override
 	public void insertInJira() throws JiraGeneralException {
-		BasicIssue bi = subTSrv.createSubTask(confBean.getProjectName(), confBean.getLastStoryKey(), dtoExcelModel.typeDemande, dtoExcelModel.resume, dtoExcelModel.descriptif, dtoExcelModel.priority, dtoExcelModel.estimation, dtoExcelModel.composantName);
+		BasicIssue bi = subTSrv.createSubTask(jiraUserDatas.getProjectName(), jiraUserDatas.getLastStoryKey(), dtoExcelModel.typeDemande, dtoExcelModel.resume, dtoExcelModel.descriptif, dtoExcelModel.priority, dtoExcelModel.estimation, dtoExcelModel.composantName);
 		LOG.info("Subtask has been created with KEY : " + bi.getKey());
 
 		//update the DTO key
 		this.dtoExcelModel.key = String.valueOf(bi.getKey());
+	}
+	
+	@Override
+	public void updateRowInJira() {
+		LOG.info("SubTasks update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 
 }

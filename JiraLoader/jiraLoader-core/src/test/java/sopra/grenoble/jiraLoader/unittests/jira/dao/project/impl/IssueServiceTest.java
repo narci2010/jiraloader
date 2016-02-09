@@ -3,6 +3,8 @@ package sopra.grenoble.jiraLoader.unittests.jira.dao.project.impl;
 import static org.junit.Assert.*;
 
 import java.net.URISyntaxException;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
@@ -187,6 +189,30 @@ public class IssueServiceTest {
 			assertNotNull(subTask);
 		} finally {
 			issueSrv.removeIssue(bi.getKey(), true);
+		}
+	}
+	
+	@Test(expected=NoSuchElementException.class)
+	public void getByStartingName_notFoundTest() {
+		Optional basicIssue = issueSrv.getByStartingName("TOTO", projectTestName);
+		assertNotNull(basicIssue);
+		basicIssue.get();
+	}
+	
+	@Test
+	public void getByStartingName_FoundTest() throws Exception {
+		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "XXX_TOTO1 | test 1", "description", "urgent", componentName);
+		BasicIssue bi2 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "XXX_TOTO2 | test 2", "description", "urgent", componentName);
+		BasicIssue bi3 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "XXX_TOTO3 | test 3", "description", "urgent", componentName);
+		
+		try {
+			Optional <BasicIssue> basicIssue = issueSrv.getByStartingName("XXX_TOTO2", projectTestName);
+			assertNotNull(basicIssue);
+			assertEquals("bi2 id should have been returned", bi2.getKey(), basicIssue.get().getKey());
+		} finally {
+			issueSrv.removeIssue(bi1.getKey(), true);
+			issueSrv.removeIssue(bi2.getKey(), true);
+			issueSrv.removeIssue(bi3.getKey(), true);
 		}
 	}
 }

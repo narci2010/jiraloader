@@ -33,7 +33,7 @@ public class VersionWrapper extends AbstractWrapper<Version> {
 		//check if version exists
 		com.atlassian.jira.rest.client.domain.Version v = null;
 		try {
-			v = vSrv.getVersion(confBean.getProjectName(), dtoExcelModel.versionName);
+			v = vSrv.getVersion(jiraUserDatas.getProjectName(), dtoExcelModel.versionName);
 			LOG.info("Version " + dtoExcelModel.versionName + " already exist with ID <" + v.getId() + ">");
 		} catch (VersionNotFoundException e) {
 		}
@@ -41,12 +41,17 @@ public class VersionWrapper extends AbstractWrapper<Version> {
 		//only create the version if no reference has been found previously
 		if (v == null) {
 			//create the version
-			v = vSrv.createVersion(dtoExcelModel.versionName, dtoExcelModel.resume, confBean.getProjectName(), null);
+			v = vSrv.createVersion(dtoExcelModel.versionName, dtoExcelModel.resume, jiraUserDatas.getProjectName(), null);
 			LOG.info("Creating new Version in JIRA with name : " + dtoExcelModel.versionName + " with ID <" + v.getId() + ">");
 		}
 		
 		//updated DTO line
 		this.dtoExcelModel.key = String.valueOf(v.getId());
+	}
+	
+	@Override
+	public void updateRowInJira() {
+		LOG.info("Version update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 
 }

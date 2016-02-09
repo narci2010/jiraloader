@@ -2,6 +2,7 @@ package sopra.grenoble.jiraLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import sopra.grenoble.jiraLoader.configurationbeans.ExcelDatas;
+import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
 import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
@@ -30,8 +33,11 @@ public class JiraLoader {
 	private MetadataGeneralLoader metadataLoader;
 
 	@Autowired
-	private JiraUserConfiguration confBean;
+	private JiraUserDatas jiraUserDatasBean;
 
+	@Autowired
+	private ExcelDatas excelFileDatasBean;
+	
 	/**
 	 * The wrapper factory
 	 */
@@ -66,18 +72,24 @@ public class JiraLoader {
 		try {
 			File excelFile = new File(excelFilePath);
 			excelLoader = new XslsFileReaderAndWriter(excelFile);
-			excelLoader.openSheet(1);
 		} catch (Exception e) {
 			LOG.error("Error while opening Excel file. ", e);
 			return;
 		}
-
+		
+		LOG.info("###################################################");
+		LOG.info("STEP 3 - Validate excel format file and load specific configuration");
+		if (!loadConfigurationAndValidateExcelFormat(excelLoader)) {
+			LOG.error("The first sheet 'Configuration' is not valid. Please read logs and fix excel file");
+			return;
+		}
+		
 		try {
 			/*
 			 * File is opened. Now validate all rows
 			 */
 			LOG.info("###################################################");
-			LOG.info("STEP 3 - Validating all excel file rows");
+			LOG.info("STEP 4 - Validating all excel file rows");
 			if (!validateAllRows(excelLoader)) {
 				LOG.error("At least one row is not valid. Please read logs and fix excel file");
 				return;
@@ -87,13 +99,39 @@ public class JiraLoader {
 			 * ALl row are valid. Now inject row one by one in JIRA
 			 */
 			LOG.info("###################################################");
-			LOG.info("STEP 4 - Starting the injection");
+			LOG.info("STEP 5 - Starting the injection");
 			injectAllRows(excelLoader);
 
 		} finally {
 			// always close the excel file
 			excelLoader.closeFile();
 		}
+	}
+	
+	/**
+	 * This function validate the excel file version and loads the configuration specified in the first sheet.
+	 * @param excelLoader
+	 */
+	protected boolean loadConfigurationAndValidateExcelFormat(XslsFileReaderAndWriter excelLoader) {
+		excelLoader.openSheet(0);
+		
+		// The excel file version must be valid
+		Optional<Integer> result = excelLoader.readIntegerCellContent(1, 5);
+		if (!result.isPresent() || result.get().intValue() < ExcelDatas.JIRA_LOADER_REQUIRED_VERSION) 
+		{
+			LOG.error("The excel file version is not correct. You have to use at least the version " + ExcelDatas.JIRA_LOADER_REQUIRED_VERSION);
+			return false;
+		}
+		
+		LOG.info("Your excel file version is : " + result.get());
+		
+		//load the other configuration value
+		excelFileDatasBean.setSearchStoryByNameBeforeCreate(excelLoader.readBooleanCellContent(2, 5).orElseGet(() -> {
+			LOG.warn("No configuration at line 2,5. Set default value to false");
+			return false;
+		}));
+		
+		return true;
 	}
 
 	/**
@@ -103,11 +141,14 @@ public class JiraLoader {
 	 */
 	private void injectAllRows(XslsFileReaderAndWriter excelLoader) {
 		// skip header
+		excelLoader.openSheet(1);
 		excelLoader.setRowPosition(1);
 
 		do {
 			final Row row = excelLoader.readNextRow();
-			AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(row);
+			
+			String typeDemande = row.getCell(1).getStringCellValue();
+			AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(typeDemande);
 
 			// load the row
 			GenericModel genModel = wrapper.loadRow(row);
@@ -128,7 +169,7 @@ public class JiraLoader {
 			// save the lastStory key if it's a story
 			if (genModel.typeDemande.compareTo(JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME) == 0) {
 				LOG.debug("Save last story key : " + genModel.key);
-				confBean.setLastStoryKey(genModel.key);
+				jiraUserDatasBean.setLastStoryKey(genModel.key);
 			}
 		} while (!excelLoader.isLastRow());
 
@@ -143,6 +184,7 @@ public class JiraLoader {
 	 */
 	private boolean validateAllRows(XslsFileReaderAndWriter excelLoader) {
 		// skip header
+		excelLoader.openSheet(1);
 		excelLoader.setRowPosition(1);
 		boolean allLineOK = true;
 		boolean atLeastOneDataFound = false;
@@ -153,7 +195,12 @@ public class JiraLoader {
 			final Row row = excelLoader.readNextRow();
 
 			try {
-				AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(row);
+				String typeDemande = row.getCell(1).getStringCellValue();
+				if (typeDemande == null) {
+					throw new UnexpectedTypeLineException();
+				}
+				
+				AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(typeDemande);
 				if (wrapper == null) {
 					throw new UnexpectedTypeLineException();
 				}

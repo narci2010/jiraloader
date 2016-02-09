@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.poi.POIXMLException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -96,6 +97,42 @@ public class XslsFileReaderAndWriter {
 	public Row readLine(int linePosition) {
 		setRowPosition(linePosition);
 		return readNextRow();
+	}
+	
+	/**
+	 * Read the content of a specific cell. Result can be null. 
+	 * @param linePosition
+	 * @param columPosition
+	 * @return {@link Optional}
+	 */
+	public Optional<String> readStringCellContent(int linePosition, int columPosition) {
+		setRowPosition(linePosition);
+		Row row = readNextRow();
+		return ExcelRowUtils.getStringValueFromRow(row, columPosition);
+	}
+	
+	/**
+	 * Read the content of a specific cell. Result can be null. 
+	 * @param linePosition
+	 * @param columPosition
+	 * @return {@link Optional}
+	 */
+	public Optional<Integer> readIntegerCellContent(int linePosition, int columPosition) {
+		setRowPosition(linePosition);
+		Row row = readNextRow();
+		return ExcelRowUtils.getIntegerValueFromRow(row, columPosition);
+	}
+	
+	/**
+	 * Read the content of a specific cell. Result can be null. 
+	 * @param linePosition
+	 * @param columPosition
+	 * @return {@link Optional}
+	 */
+	public Optional<Boolean> readBooleanCellContent(int linePosition, int columPosition) {
+		setRowPosition(linePosition);
+		Row row = readNextRow();
+		return ExcelRowUtils.getBooleanValueFromRow(row, columPosition);
 	}
 
 	/**

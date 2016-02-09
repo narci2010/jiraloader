@@ -18,7 +18,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import sopra.grenoble.jiraLoader.JiraLoader;
-import sopra.grenoble.jiraLoader.JiraUserConfiguration;
+import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.jira.dao.project.IProjectService;
 import sopra.grenoble.jiraLoader.spring.ApplicationContextProvider;
@@ -50,7 +50,7 @@ public class JiraController {
 
 	private JiraLoaderFx mainApp;
 
-	private JiraUserConfiguration configurationBean;
+	private JiraUserDatas jiraUserConfiguration;
 
 	/*
 	 * Jira Loader service
@@ -66,7 +66,7 @@ public class JiraController {
 		super();
 
 		// init bean from spring
-		configurationBean = ApplicationContextProvider.getApplicationContext().getBean(JiraUserConfiguration.class);
+		jiraUserConfiguration = ApplicationContextProvider.getApplicationContext().getBean(JiraUserDatas.class);
 		projectSrv = ApplicationContextProvider.getApplicationContext().getBean(IProjectService.class);
 		jiraLoader = ApplicationContextProvider.getApplicationContext().getBean(JiraLoader.class);
 
@@ -74,8 +74,8 @@ public class JiraController {
 
 	@FXML
 	private void initialize() {
-		tfLogin.setText(configurationBean.getUsername());
-		tfJiraUri.setText(configurationBean.getUri());
+		tfLogin.setText(jiraUserConfiguration.getUsername());
+		tfJiraUri.setText(jiraUserConfiguration.getUri());
 
 	}
 
@@ -85,7 +85,7 @@ public class JiraController {
 
 		// update bean with project name
 		LOG.info("Change project bean name to : " + cbProjectChooser.getSelectionModel().getSelectedItem());
-		configurationBean.setProjectName(cbProjectChooser.getSelectionModel().getSelectedItem());
+		jiraUserConfiguration.setProjectName(cbProjectChooser.getSelectionModel().getSelectedItem());
 		// run application
 
 		Runnable task = () -> {
@@ -128,9 +128,9 @@ public class JiraController {
 		jiraConnection = ApplicationContextProvider.getApplicationContext().getBean(IJiraRestClientV2.class);
 
 		// update configuration bean
-		configurationBean.setUri(tfJiraUri.getText());
-		configurationBean.setUsername(tfLogin.getText());
-		configurationBean.setPassword(tfPassword.getText());
+		jiraUserConfiguration.setUri(tfJiraUri.getText());
+		jiraUserConfiguration.setUsername(tfLogin.getText());
+		jiraUserConfiguration.setPassword(tfPassword.getText());
 
 		// opening connection
 		try {
@@ -244,12 +244,12 @@ public class JiraController {
 		this.btConnect = btConnect;
 	}
 
-	public JiraUserConfiguration getConfigurationBean() {
-		return configurationBean;
+	public JiraUserDatas getConfigurationBean() {
+		return jiraUserConfiguration;
 	}
 
-	public void setConfigurationBean(JiraUserConfiguration configurationBean) {
-		this.configurationBean = configurationBean;
+	public void setConfigurationBean(JiraUserDatas i_jiraUserDatas) {
+		this.jiraUserConfiguration = i_jiraUserDatas;
 	}
 
 	public TextArea getTextArea() {
