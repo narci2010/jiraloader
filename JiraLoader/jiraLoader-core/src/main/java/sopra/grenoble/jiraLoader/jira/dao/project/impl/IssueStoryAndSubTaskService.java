@@ -3,6 +3,7 @@ package sopra.grenoble.jiraLoader.jira.dao.project.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Field;
 import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.Priority;
 import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.domain.Version;
 import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
@@ -23,6 +25,7 @@ import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraEpicNotFound;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
+import sopra.grenoble.jiraLoader.exceptions.JiraPriorityNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.VersionNotFoundException;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraFieldLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
@@ -166,6 +169,30 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 			}
 		}
 		return Optional.empty();
+	}
+
+	
+	@Override
+	public void updateIssue(String issueKey, String projectName, String priority) throws IssueNotFoundException, JiraGeneralException {
+		Issue issue = getByKey(issueKey, projectName);
+
+		List<FieldInput> lstFields = new ArrayList<>();
+		issue.getPriority().getId();
+
+		//set priority (optional)
+		if ((priority != null) && (priority.compareTo(issue.getPriority().getName())!= 0 )) {
+			Priority p = priorityLoader.getElement(priority);
+			if (p == null) {
+				LOG.error("Priority with name <" + p + "> does not exist");
+				throw new JiraPriorityNotFoundException();
+			}
+
+			lstFields.add(new FieldInput("priority", ComplexIssueInputFieldValue.with("id", ""+p.getId())));
+		}
+		
+		if (lstFields.size() != 0) {
+			this.updateIssueInJira(issue, lstFields);
+		}
 	}
 	
 }

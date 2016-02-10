@@ -2,6 +2,7 @@ package sopra.grenoble.jiraloadertest.unittests.jira.dao.project.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.Version;
 
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
@@ -214,6 +216,47 @@ public class IssueServiceTest {
 			issueSrv.removeIssue(bi1.getKey(), true);
 			issueSrv.removeIssue(bi2.getKey(), true);
 			issueSrv.removeIssue(bi3.getKey(), true);
+		}
+	}
+	
+	@Test(expected=IssueNotFoundException.class)
+	public void updateStory_notexist_Test() throws IssueNotFoundException, JiraGeneralException {
+		issueSrv.updateIssue("1", projectTestName, null);
+	}
+	
+	@Test
+	public void updateStory_ok_Test() throws IssueNotFoundException, JiraGeneralException {
+		//create one issue
+		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "XXX_TOTO1 | test 1", "description", "urgent", componentName);
+		
+		try {
+			//update the issue
+			issueSrv.updateIssue(bi1.getKey(), projectTestName, "normal");
+			//test
+			Issue i = issueSrv.getByKey(bi1.getKey(), projectTestName);
+			assertNotNull(i);
+			assertEquals("priority is not correct", "normal", i.getPriority().getName());
+		} finally {
+			//delete the issue
+			issueSrv.removeIssue(bi1.getKey(), true);
+		}
+	}
+	
+	@Test
+	public void updateStory_nothing_Test() throws IssueNotFoundException, JiraGeneralException {
+		//create one issue
+		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "XXX_TOTO1 | test 1", "description", "urgent", componentName);
+		
+		try {
+			//update the issue
+			issueSrv.updateIssue(bi1.getKey(), projectTestName, "urgent");
+			//test
+			Issue i = issueSrv.getByKey(bi1.getKey(), projectTestName);
+			assertNotNull(i);
+			assertEquals("priority is not correct", "urgent", i.getPriority().getName());
+		} finally {
+			//delete the issue
+			issueSrv.removeIssue(bi1.getKey(), true);
 		}
 	}
 }

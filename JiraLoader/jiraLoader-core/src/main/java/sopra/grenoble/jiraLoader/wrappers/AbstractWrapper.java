@@ -85,8 +85,8 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 	 */
 	public E loadRow(Row row) {
 		this.dtoExcelModel.loadRow(row);
-		LOG.debug("Create DTO with following datas " + this.dtoExcelModel.toString());
 		this.excelRow = row;
+		LOG.debug(getLogPrefixe() + "Create DTO with following datas " + this.dtoExcelModel.toString());
 		return this.dtoExcelModel;
 	}
 
@@ -114,7 +114,7 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 	public boolean validateRow() throws JiraGeneralException {
 		//validate DTO data
 		if (!this.dtoExcelModel.validate()) {
-			LOG.info("Line <" + excelRow.getRowNum() + "> is not valid - Missing data in Excel file");
+			LOG.info(getLogPrefixe() + " Line is not valid - Missing data in Excel file");
 			return false;
 		}
 		
@@ -122,7 +122,7 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 		if (dtoExcelModel.composantName != null) {
 			//composantName must exist in JIRA
 			if(!projectService.isComponentNameExistsInProject(jiraUserDatas.getProjectName(), dtoExcelModel.composantName)) {
-				LOG.info("Line <" + excelRow.getRowNum() + "> is not valid - Component name <" + dtoExcelModel.composantName + "> does not exist in JIRA");
+				LOG.info(getLogPrefixe() + " Line is not valid - Component name <" + dtoExcelModel.composantName + "> does not exist in JIRA");
 				return false;
 			}
 		}
@@ -175,5 +175,9 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 		this.updateInJira(this.dtoExcelModel);
 		//update excel file with updated datas
 		this.updateRowLineInExcel();
+	}
+	
+	protected String getLogPrefixe() {
+		return "Line <" + excelRow.getRowNum() + "> : ";
 	}
 }

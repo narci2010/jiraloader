@@ -13,11 +13,11 @@ import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.IssueType;
 import com.atlassian.jira.rest.client.domain.Priority;
 import com.atlassian.jira.rest.client.domain.Project;
-import com.atlassian.jira.rest.client.domain.SearchResult;
+import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueInputJsonGenerator;
-import com.google.common.base.CharMatcher;
+import com.atlassian.jira.rest.client.internal.json.gen.IssueUpdateJsonGenerator;
 
 import sopra.grenoble.jiraLoader.exceptions.ComponentNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
@@ -46,7 +46,7 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 	private JiraIssuesTypeLoader issueTypeLoaderSrv;
 	
 	@Autowired
-	private JiraPriorityLoader priorityLoader;
+	protected JiraPriorityLoader priorityLoader;
 
 	@Override
 	public Issue getByKey(String key, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
@@ -138,7 +138,7 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 		return issueInB;		
 	}
 	
-	protected void logIssueInJSON(IssueInput issue) {
+	private void logIssueInJSON(IssueInput issue) {
 		try {
 			IssueInputJsonGenerator jGenerator = new IssueInputJsonGenerator();
 			JSONObject jsonObj = jGenerator.generate(issue);
@@ -146,6 +146,22 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 		} catch (Exception e) {
 			LOG.warn("Unable to convert issue in JSON", e);
 		}
+	}
+	
+	private void logUpdateIssueInJSON(Issue issue, Iterable<FieldInput> newFieldList) {
+		try {
+			IssueUpdateJsonGenerator jGenerator = new IssueUpdateJsonGenerator();
+			JSONObject jsonObj = jGenerator.generate(newFieldList);
+			LOG.debug("Issue =>" + issue.getKey() + " - updated with : " + jsonObj.toString());
+		} catch (Exception e) {
+			LOG.warn("Unable to convert issue in JSON", e);
+		}
+	}
+	
+	protected Issue updateIssueInJira(Issue issue, Iterable<FieldInput> newFieldList) {
+		this.logUpdateIssueInJSON(issue, newFieldList);
+		jiraConnection.getIssueClient().update(issue, newFieldList, pm);
+		return issue;
 	}
 	
 	/**

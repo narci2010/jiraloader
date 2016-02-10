@@ -7,8 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import sopra.grenoble.jiraLoader.JiraLoader;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
-@SpringBootApplication(scanBasePackageClasses=JiraLoader.class) // same as @Configuration @EnableAutoConfiguration @ComponentScan
+@SpringBootApplication(scanBasePackageClasses={JiraLoader.class, ApplicationConfiguration.class}) // same as @Configuration @EnableAutoConfiguration @ComponentScan
 public class Main {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(Main.class);

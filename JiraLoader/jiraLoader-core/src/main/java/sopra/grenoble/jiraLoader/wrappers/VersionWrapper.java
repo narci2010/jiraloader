@@ -34,7 +34,7 @@ public class VersionWrapper extends AbstractWrapper<Version> {
 		com.atlassian.jira.rest.client.domain.Version v = null;
 		try {
 			v = vSrv.getVersion(jiraUserDatas.getProjectName(), iv.versionName);
-			LOG.info("Version " + iv.versionName + " already exist with ID <" + v.getId() + ">");
+			LOG.info(getLogPrefixe() + "Version " + iv.versionName + " already exist with ID <" + v.getId() + ">");
 		} catch (VersionNotFoundException e) {
 		}
 		
@@ -42,7 +42,7 @@ public class VersionWrapper extends AbstractWrapper<Version> {
 		if (v == null) {
 			//create the version
 			v = vSrv.createVersion(iv.versionName, iv.resume, jiraUserDatas.getProjectName(), null);
-			LOG.info("Creating new Version in JIRA with name : " + iv.versionName + " with ID <" + v.getId() + ">");
+			LOG.info(getLogPrefixe() + "Creating new Version in JIRA with name : " + iv.versionName + " with ID <" + v.getId() + ">");
 		}
 		
 		//updated DTO line
@@ -51,7 +51,7 @@ public class VersionWrapper extends AbstractWrapper<Version> {
 	
 	@Override
 	public void updateInJira(Version v) {
-		LOG.info("Version update action is not allowed - Update function is not implemented... Maybe in next release");
+		LOG.info(getLogPrefixe() + "Version update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 
 }

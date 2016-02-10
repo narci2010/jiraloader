@@ -12,8 +12,9 @@ import sopra.grenoble.jiraLoader.JiraLoader;
 import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.spring.ApplicationContextProvider;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
-@SpringBootApplication(scanBasePackageClasses=JiraLoader.class) // same as @Configuration @EnableAutoConfiguration @ComponentScan
+@SpringBootApplication(scanBasePackageClasses={JiraLoader.class, ApplicationConfiguration.class}) // same as @Configuration @EnableAutoConfiguration @ComponentScan
 public class Main {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(Main.class);

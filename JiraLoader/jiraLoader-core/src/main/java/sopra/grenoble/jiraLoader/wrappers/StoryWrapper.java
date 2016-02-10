@@ -36,17 +36,17 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 		Optional<BasicIssue> bi = Optional.empty();
 		//if option checkStoryExist is activated, check if the story is existing in JIRA
 		if (excelConfigurationDatas.isSearchStoryByNameBeforeCreate()) {
-			LOG.debug("isSearchStoryByNameBeforeCreate activated. Looking for issue with name : " + s.resume);
+			LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.resume);
 			bi = getStoryIfExist(s.resume, jiraUserDatas.getProjectName());
 		}
 		
 		if (bi.isPresent()) {
-			LOG.info("Story already exist in JIRA. Only update excel file");
+			LOG.info(getLogPrefixe() + "Story has been retrieved with the key : " + bi.get().getKey());
 			s.key = String.valueOf(bi.get().getKey());
 			updateRowInJira();
 		} else {
 			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.resume, s.descriptif, s.priority, s.composantName));
-			LOG.info("Story has been created with KEY : " + bi.get().getKey());
+			LOG.info(getLogPrefixe() + "Story has been created with KEY : " + bi.get().getKey());
 		}
 
 		//update the DTO key
@@ -54,18 +54,12 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 	}
 
 	@Override
-	public void updateInJira(Story s) {
-		LOG.info("Story update action is not allowed - Update function is not implemented... Maybe in next release");
+	public void updateInJira(Story s) throws JiraGeneralException {
+		storySrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
+		LOG.info(getLogPrefixe() + "Story with KEY : " + s.key + " has been updated");
 	}
 	
 	
-	/**
-	 * Return the {@link BasicIssue}
-	 * @param fullStoryName
-	 * @param epicName
-	 * @param projectName
-	 * @return
-	 */
 	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) {
 		String storyName = fullStoryName.split("\\|")[0].trim();
 		return storySrv.getByStartingName(storyName, projectName);

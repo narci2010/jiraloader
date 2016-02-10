@@ -36,9 +36,9 @@ public class EpicWrapper extends AbstractWrapper<Epic> {
 		BasicIssue epicIssue = epicSrv.getByName(e.resume, jiraUserDatas.getProjectName());
 		if (epicIssue == null) {
 			epicIssue = epicSrv.createEpic(jiraUserDatas.getProjectName(), e.resume, e.composantName);
-			LOG.info("Creating new Epic in JIRA with name : " + e.resume + " with KEY <" + epicIssue.getKey() + ">");
+			LOG.info(getLogPrefixe() + "Creating new Epic in JIRA with name : " + e.resume + " with KEY <" + epicIssue.getKey() + ">");
 		} else {
-			LOG.info("Epic already exist in JIRA with KEY <" + epicIssue.getKey() + ">");
+			LOG.info(getLogPrefixe() + "Epic already exist in JIRA with KEY <" + epicIssue.getKey() + ">");
 		}
 		
 		//update the DTO key
@@ -48,7 +48,7 @@ public class EpicWrapper extends AbstractWrapper<Epic> {
 
 	@Override
 	public void updateInJira(Epic e) {
-		LOG.info("Epic update action is not allowed - Update function is not implemented... Maybe in next release");
+		LOG.info(getLogPrefixe() + "Epic update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 
+import sopra.grenoble.jiraLoader.excel.dto.Story;
 import sopra.grenoble.jiraLoader.excel.dto.SubTasks;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
@@ -33,15 +34,16 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 	@Override
 	public void insertInJira(SubTasks s) throws JiraGeneralException {
 		BasicIssue bi = subTSrv.createSubTask(jiraUserDatas.getProjectName(), jiraUserDatas.getLastStoryKey(), s.typeDemande, s.resume, s.descriptif, s.priority, s.estimation, s.composantName);
-		LOG.info("Subtask has been created with KEY : " + bi.getKey());
+		LOG.info(getLogPrefixe() + "Subtask has been created with KEY : " + bi.getKey());
 
 		//update the DTO key
 		s.key = String.valueOf(bi.getKey());
 	}
 	
 	@Override
-	public void updateInJira(SubTasks s) {
-		LOG.info("SubTasks update action is not allowed - Update function is not implemented... Maybe in next release");
+	public void updateInJira(SubTasks s) throws JiraGeneralException {
+		subTSrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
+		LOG.info(getLogPrefixe() + "SubTasks with KEY : " + s.key + " has been updated");
 	}
 
 }

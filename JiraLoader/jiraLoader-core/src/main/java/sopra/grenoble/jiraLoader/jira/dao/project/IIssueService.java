@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 
+import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 
 public interface IIssueService extends IIssueGenericService {
@@ -15,6 +16,15 @@ public interface IIssueService extends IIssueGenericService {
 			String description, String priority, String componentName)
 					throws JiraGeneralException;
 
+	/**
+	 * Return a basicissue if found. If not found, return a null value in the {@link Optional} container.
+	 * @param storyName
+	 * @param projectName
+	 * @return
+	 */
 	Optional<BasicIssue> getByStartingName(String storyName, String projectName);
+	
+	void updateIssue(String issueKey, String projectName, String priority)
+			throws IssueNotFoundException, JiraGeneralException;
 
 }

@@ -58,4 +58,11 @@ public class StoryServiceMock implements IIssueService {
 		return Optional.empty();
 	}
 
+	@Override
+	public void updateIssue(String issueKey, String projectName, String priority)
+			throws IssueNotFoundException, JiraGeneralException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
