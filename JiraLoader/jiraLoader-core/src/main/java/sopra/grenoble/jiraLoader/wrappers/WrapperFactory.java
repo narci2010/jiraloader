@@ -26,7 +26,7 @@ public class WrapperFactory {
 		try {
 			return (AbstractWrapper<? extends GenericModel>) ApplicationContextProvider.getApplicationContext().getBean("wrapper_" + typeDemande);
 		} catch (RuntimeException e) {
-			LOG.error("Unable to find th wrapper identified for the type : " + typeDemande);
+			LOG.error("Unable to find the wrapper identified for the type : " + typeDemande);
 			return null;
 		}
 		

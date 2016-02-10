@@ -12,7 +12,7 @@
 	</appender>
 	
 	<logger name="sopra" level="debug" />	
-	<logger name="org.springframework" level="error" />
+	<logger name="org.springframework" level="warn" />
 
 	<root level="error">
 		<appender-ref ref="CONSOLE" />

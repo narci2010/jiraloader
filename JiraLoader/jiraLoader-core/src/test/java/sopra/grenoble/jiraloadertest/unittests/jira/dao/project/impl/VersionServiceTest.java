@@ -1,4 +1,4 @@
-package sopra.grenoble.jiraLoader.unittests.jira.dao.project.impl;
+package sopra.grenoble.jiraloadertest.unittests.jira.dao.project.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -21,11 +21,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.atlassian.jira.rest.client.domain.Version;
 
-import sopra.grenoble.jiraLoader.ApplicationConfiguration;
 import sopra.grenoble.jiraLoader.exceptions.ProjectNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.VersionNotFoundException;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.jira.dao.project.IVersionService;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(ApplicationConfiguration.class)

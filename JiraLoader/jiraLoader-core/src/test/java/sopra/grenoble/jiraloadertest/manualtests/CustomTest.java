@@ -1,4 +1,4 @@
-package sopra.grenoble.jiraLoader.manualtests;
+package sopra.grenoble.jiraloadertest.manualtests;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -20,8 +20,8 @@ import com.atlassian.jira.rest.client.domain.Project;
 import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.domain.Version;
 
-import sopra.grenoble.jiraLoader.ApplicationConfiguration;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(ApplicationConfiguration.class)

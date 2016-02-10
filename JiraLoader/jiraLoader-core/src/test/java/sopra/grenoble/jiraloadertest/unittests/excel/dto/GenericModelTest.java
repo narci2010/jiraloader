@@ -1,4 +1,4 @@
-package sopra.grenoble.jiraLoader.unittests.excel.dto;
+package sopra.grenoble.jiraloadertest.unittests.excel.dto;
 
 import static org.junit.Assert.*;
 

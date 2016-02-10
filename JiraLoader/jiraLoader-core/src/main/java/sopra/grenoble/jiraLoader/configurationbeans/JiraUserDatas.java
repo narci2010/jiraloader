@@ -1,10 +1,8 @@
 package sopra.grenoble.jiraLoader.configurationbeans;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
-@EnableAutoConfiguration
 @Component
 public class JiraUserDatas {
 

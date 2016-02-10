@@ -31,23 +31,23 @@ public class EpicWrapper extends AbstractWrapper<Epic> {
 
 
 	@Override
-	public void insertInJira() throws JiraGeneralException {
+	public void insertInJira(Epic e) throws JiraGeneralException {
 		//test if exists
-		BasicIssue epicIssue = epicSrv.getByName(dtoExcelModel.resume, jiraUserDatas.getProjectName());
+		BasicIssue epicIssue = epicSrv.getByName(e.resume, jiraUserDatas.getProjectName());
 		if (epicIssue == null) {
-			epicIssue = epicSrv.createEpic(jiraUserDatas.getProjectName(), dtoExcelModel.resume, dtoExcelModel.composantName);
-			LOG.info("Creating new Epic in JIRA with name : " + dtoExcelModel.resume + " with KEY <" + epicIssue.getKey() + ">");
+			epicIssue = epicSrv.createEpic(jiraUserDatas.getProjectName(), e.resume, e.composantName);
+			LOG.info("Creating new Epic in JIRA with name : " + e.resume + " with KEY <" + epicIssue.getKey() + ">");
 		} else {
 			LOG.info("Epic already exist in JIRA with KEY <" + epicIssue.getKey() + ">");
 		}
 		
 		//update the DTO key
-		this.dtoExcelModel.key = String.valueOf(epicIssue.getKey());
+		e.key = String.valueOf(epicIssue.getKey());
 	}
 
 
 	@Override
-	public void updateRowInJira() {
+	public void updateInJira(Epic e) {
 		LOG.info("Epic update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 

@@ -1,6 +1,8 @@
-package sopra.grenoble.jiraLoader.unittests;
+package sopra.grenoble.jiraloadertest.unittests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
@@ -11,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sopra.grenoble.jiraLoader.ApplicationConfiguration;
 import sopra.grenoble.jiraLoader.JiraLoader;
 import sopra.grenoble.jiraLoader.configurationbeans.ExcelDatas;
 import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

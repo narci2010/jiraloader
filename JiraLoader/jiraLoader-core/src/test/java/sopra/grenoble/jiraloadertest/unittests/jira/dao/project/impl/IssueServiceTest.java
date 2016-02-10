@@ -1,6 +1,7 @@
-package sopra.grenoble.jiraLoader.unittests.jira.dao.project.impl;
+package sopra.grenoble.jiraloadertest.unittests.jira.dao.project.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
@@ -18,7 +19,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Version;
 
-import sopra.grenoble.jiraLoader.ApplicationConfiguration;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraEpicNotFound;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
@@ -30,6 +30,7 @@ import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraPriorityLoader;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueEpicService;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
 import sopra.grenoble.jiraLoader.jira.dao.project.IVersionService;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(ApplicationConfiguration.class)

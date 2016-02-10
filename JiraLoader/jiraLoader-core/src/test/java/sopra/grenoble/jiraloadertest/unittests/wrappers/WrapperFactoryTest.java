@@ -1,4 +1,4 @@
-package sopra.grenoble.jiraLoader.unittests.wrappers;
+package sopra.grenoble.jiraloadertest.unittests.wrappers;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -9,14 +9,13 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import sopra.grenoble.jiraLoader.ApplicationConfiguration;
-import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
 import sopra.grenoble.jiraLoader.wrappers.AbstractWrapper;
 import sopra.grenoble.jiraLoader.wrappers.EpicWrapper;
 import sopra.grenoble.jiraLoader.wrappers.StoryWrapper;
 import sopra.grenoble.jiraLoader.wrappers.SubTasksWrapper;
 import sopra.grenoble.jiraLoader.wrappers.VersionWrapper;
 import sopra.grenoble.jiraLoader.wrappers.WrapperFactory;
+import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(ApplicationConfiguration.class)

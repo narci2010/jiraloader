@@ -29,28 +29,28 @@ public class VersionWrapper extends AbstractWrapper<Version> {
 
 
 	@Override
-	public void insertInJira() throws JiraGeneralException {
+	public void insertInJira(Version iv) throws JiraGeneralException {
 		//check if version exists
 		com.atlassian.jira.rest.client.domain.Version v = null;
 		try {
-			v = vSrv.getVersion(jiraUserDatas.getProjectName(), dtoExcelModel.versionName);
-			LOG.info("Version " + dtoExcelModel.versionName + " already exist with ID <" + v.getId() + ">");
+			v = vSrv.getVersion(jiraUserDatas.getProjectName(), iv.versionName);
+			LOG.info("Version " + iv.versionName + " already exist with ID <" + v.getId() + ">");
 		} catch (VersionNotFoundException e) {
 		}
 		
 		//only create the version if no reference has been found previously
 		if (v == null) {
 			//create the version
-			v = vSrv.createVersion(dtoExcelModel.versionName, dtoExcelModel.resume, jiraUserDatas.getProjectName(), null);
-			LOG.info("Creating new Version in JIRA with name : " + dtoExcelModel.versionName + " with ID <" + v.getId() + ">");
+			v = vSrv.createVersion(iv.versionName, iv.resume, jiraUserDatas.getProjectName(), null);
+			LOG.info("Creating new Version in JIRA with name : " + iv.versionName + " with ID <" + v.getId() + ">");
 		}
 		
 		//updated DTO line
-		this.dtoExcelModel.key = String.valueOf(v.getId());
+		iv.key = String.valueOf(v.getId());
 	}
 	
 	@Override
-	public void updateRowInJira() {
+	public void updateInJira(Version v) {
 		LOG.info("Version update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 

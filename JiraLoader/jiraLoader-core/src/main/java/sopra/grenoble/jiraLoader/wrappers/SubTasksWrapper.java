@@ -9,7 +9,7 @@ import com.atlassian.jira.rest.client.domain.BasicIssue;
 
 import sopra.grenoble.jiraLoader.excel.dto.SubTasks;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
-import sopra.grenoble.jiraLoader.jira.dao.project.impl.IssueStoryAndSubTaskService;
+import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
 
 @Service("wrapper_Sous-tâche")
 public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
@@ -18,7 +18,7 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 	
 
 	@Autowired
-	private IssueStoryAndSubTaskService subTSrv;
+	private IIssueService subTSrv;
 	
 	/**
 	 * Default constructor
@@ -31,16 +31,16 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 
 
 	@Override
-	public void insertInJira() throws JiraGeneralException {
-		BasicIssue bi = subTSrv.createSubTask(jiraUserDatas.getProjectName(), jiraUserDatas.getLastStoryKey(), dtoExcelModel.typeDemande, dtoExcelModel.resume, dtoExcelModel.descriptif, dtoExcelModel.priority, dtoExcelModel.estimation, dtoExcelModel.composantName);
+	public void insertInJira(SubTasks s) throws JiraGeneralException {
+		BasicIssue bi = subTSrv.createSubTask(jiraUserDatas.getProjectName(), jiraUserDatas.getLastStoryKey(), s.typeDemande, s.resume, s.descriptif, s.priority, s.estimation, s.composantName);
 		LOG.info("Subtask has been created with KEY : " + bi.getKey());
 
 		//update the DTO key
-		this.dtoExcelModel.key = String.valueOf(bi.getKey());
+		s.key = String.valueOf(bi.getKey());
 	}
 	
 	@Override
-	public void updateRowInJira() {
+	public void updateInJira(SubTasks s) {
 		LOG.info("SubTasks update action is not allowed - Update function is not implemented... Maybe in next release");
 	}
 
