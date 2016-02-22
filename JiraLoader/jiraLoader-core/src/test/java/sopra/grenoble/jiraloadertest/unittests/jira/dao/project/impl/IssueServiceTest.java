@@ -2,7 +2,6 @@ package sopra.grenoble.jiraloadertest.unittests.jira.dao.project.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.net.URISyntaxException;
 import java.util.NoSuchElementException;
@@ -137,6 +136,13 @@ public class IssueServiceTest {
 	@Test
 	public void createStoryWithEpic() throws JiraGeneralException {
 		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "resume", "description", "urgent", componentName);
+		assertNotNull(bi);
+		issueSrv.removeIssue(bi.getKey(), true);
+	}
+	
+	@Test
+	public void createStoryWithoutEpic() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "resume", "description", "urgent", componentName);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}

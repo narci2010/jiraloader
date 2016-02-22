@@ -178,6 +178,9 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 	}
 	
 	protected String getLogPrefixe() {
-		return "Line <" + excelRow.getRowNum() + "> : ";
+		if (excelRow != null) {
+			return "Line <" + excelRow.getRowNum() + "> : ";
+		}
+		return "";
 	}
 }
