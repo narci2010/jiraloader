@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sopra.opal</groupId>
 	<artifactId>jiraLoader</artifactId>
-	<version>1.0</version>
+	<version>${jiraLoader.version}</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -16,7 +16,7 @@
 		<!-- specify the default env configuration folder -->
 		<envConfFolder>src/main/config</envConfFolder>
 
-		<jiraLoader.releaseName>1.0.RC05</jiraLoader.releaseName>
+		<jiraLoader.version>1.0.0</jiraLoader.version>
 	</properties>
 
 	<!-- Inherit defaults from Spring Boot -->

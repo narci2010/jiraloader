@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>sopra.opal</groupId>
 		<artifactId>jiraLoader</artifactId>
-		<version>1.0</version>
+		<version>${jiraLoader.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 

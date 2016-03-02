@@ -19,17 +19,6 @@ public class Main {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	
-	/**
-	 * Usage function
-	 */
-	private static void Usage() {
-		LOG.error("JiraLoader : bad input parameters. Five parameter must be passed");
-		LOG.error("	1 - Jira URL : try http://forge.corp.sopra/jira1");
-		LOG.error("	2 - username");
-		LOG.error("	3 - password");
-		LOG.error("	4 - JIRA project name");
-		LOG.error("	5 - Excel file path");
-	}
 	
 	/**
 	 * Main function
@@ -43,12 +32,6 @@ public class Main {
 		appContextLoc.registerShutdownHook();
 		LOG.info("Application is successfully initialised");
 		
-		
-		if (args.length != 5) {
-			LOG.error("JiraLoader : No parameter has been passed. The excel file path should be passed");
-			Usage();
-			System.exit(0);
-		}
 			
 		//start command line
 		loadCmdLineApplication(args);
@@ -66,14 +49,36 @@ public class Main {
 		//set configuration bean
 		JiraUserDatas juc = ApplicationContextProvider.getApplicationContext().getBean(JiraUserDatas.class);
 		
-		juc.setUri(args[0]);
-		juc.setUsername(args[1]);
-		juc.setPassword(args[2]);
-		juc.setProjectName(args[3]);
+		LOG.info("Jira configuration : username=" + juc.getUsername());
+		LOG.info("Jira configuration : password=" + juc.getPassword());
+		LOG.info("Jira configuration : projectName=" + juc.getProjectName());
+		LOG.info("Jira configuration : uri=" + juc.getUri());
+		LOG.info("Jira excel file path : path=" + juc.getExcelJiraFilePath());
 		
-		LOG.info("Jira project name = " + juc.getProjectName());
 		
-		String excelFilePath = args[4];
+		//test username and password
+		if (juc.getUsername() == null || juc.getPassword() == null) {
+			LOG.error("You have to specify the username or password");
+			System.exit(1);
+		}
+		
+		//test project name
+		if (juc.getProjectName() == null) {
+			LOG.error("You have to specify the projectName");
+			System.exit(1);
+		}
+		
+		//test jira url
+		if (juc.getUri() == null) {
+			LOG.error("You have to specify the jira uri");
+			System.exit(1);
+		}
+		
+		//test jiraExcel file
+		if (juc.getExcelJiraFilePath() == null) {
+			LOG.error("You have to specify the excel jira file path");
+			System.exit(1);
+		}
 		
 		
 		//opening connection
@@ -85,7 +90,7 @@ public class Main {
 
 		//run application
 		try {
-			jiraLoader.loadingFile(excelFilePath);
+			jiraLoader.loadingFile(juc.getExcelJiraFilePath());
 		} catch (IOException e) {
 			LOG.error("Error while loading excel file in JIRA", e);
 			System.exit(1);

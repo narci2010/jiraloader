@@ -30,6 +30,14 @@ public class JiraUserDatas {
 	@Value("${project.name}")
 	private String projectName;
 	
+	
+	/**
+	 * The excel file path
+	 */
+	@Value("${excelFilePath}")
+	private String excelJiraFilePath;
+	
+	
 	/**
 	 * To create task and sub tasks, the program needs to rely these both elements
 	 * to a story. This parameter is used to keep in memory the last story used while the injection.
@@ -78,4 +86,11 @@ public class JiraUserDatas {
 		this.lastStoryKey = lastStoryKey;
 	}
 
+	public String getExcelJiraFilePath() {
+		return excelJiraFilePath;
+	}
+
+	public void setExcelJiraFilePath(String excelJiraFilePath) {
+		this.excelJiraFilePath = excelJiraFilePath;
+	}
 }

@@ -23,7 +23,8 @@ public class Main {
 		
 		ConfigurableApplicationContext appContextLoc = SpringApplication.run(Main.class, args);
 		appContextLoc.registerShutdownHook();
-		LOG.info("Application is successfully initialised");
+		LOG.debug("Application is successfully initialised DEBUG");
+		LOG.warn("Application is successfully initialised WARN");
 
 		loadJavaFxApplication();
 	}

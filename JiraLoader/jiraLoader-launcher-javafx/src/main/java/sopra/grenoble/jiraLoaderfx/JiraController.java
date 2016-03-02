@@ -74,9 +74,18 @@ public class JiraController {
 
 	@FXML
 	private void initialize() {
+		//set the username
 		tfLogin.setText(jiraUserConfiguration.getUsername());
+		//set the uri
 		tfJiraUri.setText(jiraUserConfiguration.getUri());
-
+		//set the password
+		if (jiraUserConfiguration.getPassword() != null) {
+			tfPassword.setText(jiraUserConfiguration.getPassword());
+		}
+		//set the excel file path
+		if (jiraUserConfiguration.getExcelJiraFilePath() != null) {
+			tfExcelFilePath.setText(jiraUserConfiguration.getExcelJiraFilePath());
+		}
 	}
 
 	@FXML
