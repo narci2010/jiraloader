@@ -30,7 +30,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<finalName>${project.artifactId}-${jiraLoader.releaseName}</finalName>
+					<finalName>${project.artifactId}-${jiraLoader.version}</finalName>
 					<outputDirectory>.</outputDirectory>
 					<executable>true</executable>
 				</configuration>
