@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javafx.scene.input.KeyEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,6 +134,7 @@ public class JiraController {
 
 	@FXML
 	private void connectToJira() {
+
 		// get a connexion and open it
 		jiraConnection = ApplicationContextProvider.getApplicationContext().getBean(IJiraRestClientV2.class);
 
@@ -175,6 +177,9 @@ public class JiraController {
 		this.btInject.setDisable(false);
 		this.cbProjectChooser.setDisable(false);
 		this.btSelect.setDisable(false);
+		this.btConnect.setDefaultButton(false);
+		this.btInject.setDefaultButton(true);
+
 	}
 
 	private void disableBtBeforeConnection() {
