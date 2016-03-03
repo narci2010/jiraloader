@@ -133,6 +133,7 @@ public class JiraController {
 
 	@FXML
 	private void connectToJira() {
+
 		// get a connexion and open it
 		jiraConnection = ApplicationContextProvider.getApplicationContext().getBean(IJiraRestClientV2.class);
 
@@ -175,6 +176,9 @@ public class JiraController {
 		this.btInject.setDisable(false);
 		this.cbProjectChooser.setDisable(false);
 		this.btSelect.setDisable(false);
+		this.btConnect.setDefaultButton(false);
+		this.btInject.setDefaultButton(true);
+
 	}
 
 	private void disableBtBeforeConnection() {
