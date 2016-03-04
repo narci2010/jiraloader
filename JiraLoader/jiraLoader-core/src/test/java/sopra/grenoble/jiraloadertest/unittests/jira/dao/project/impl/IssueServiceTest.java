@@ -178,6 +178,7 @@ public class IssueServiceTest {
 	
 	@Test
 	public void createStoryWithSpecialChar() throws JiraGeneralException {
+
 		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "resume\nOK", "description\nOK", "urgent", componentName);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
@@ -187,7 +188,7 @@ public class IssueServiceTest {
 	public void createStoryWithBadEpics() throws JiraGeneralException {
 		issueSrv.createStory(projectTestName, "LOLOLOLO", v.getName(), "resume", "description\nOK", "urgent", componentName);
 	}
-	
+
 	@Test
 	public void createStoryWithFullOptionAndSubTasksWithFullOption() throws JiraGeneralException {
 		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), "resume", "description", "urgent", componentName);
