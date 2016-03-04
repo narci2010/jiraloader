@@ -178,7 +178,6 @@ public class IssueServiceTest {
 	
 	@Test
 	public void createStoryWithSpecialChar() throws JiraGeneralException {
-
 		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "resume\nOK", "description\nOK", "urgent", componentName);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
