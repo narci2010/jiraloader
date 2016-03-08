@@ -1,16 +1,15 @@
 package sopra.grenoble.jiraloadertest.unittests.excel.loader;
 
-import static org.junit.Assert.*;
+import org.apache.poi.ss.usermodel.Row;
+import org.junit.Test;
+import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.poi.ss.usermodel.Row;
-import org.junit.Test;
-
-import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
+import static org.junit.Assert.*;
 
 public class XslsFileReaderAndWriterTest {
 
@@ -71,5 +70,4 @@ public class XslsFileReaderAndWriterTest {
 		xlsrw.setRowPosition(100);
 		assertTrue(xlsrw.isLastRow());
 	}
-
 }

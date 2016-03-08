@@ -1,17 +1,15 @@
 package sopra.grenoble.jiraLoader.wrappers;
 
-import java.util.Optional;
-
+import com.atlassian.jira.rest.client.domain.BasicIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-
 import sopra.grenoble.jiraLoader.excel.dto.Story;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
+
+import java.util.Optional;
 
 @Service("wrapper_Story")
 public class StoryWrapper extends AbstractWrapper<Story> {
@@ -45,7 +43,7 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 			s.key = String.valueOf(bi.get().getKey());
 			updateRowInJira();
 		} else {
-			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.resume, s.descriptif, s.priority, s.composantName));
+			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.clientReference, s.resume, s.descriptif, s.priority, s.composantName));
 			LOG.info(getLogPrefixe() + "Story has been created with KEY : " + bi.get().getKey());
 		}
 

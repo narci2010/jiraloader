@@ -1,17 +1,15 @@
 package sopra.grenoble.jiraLoader.jira.dao.metadatas;
 
-import java.util.List;
-
+import com.atlassian.jira.rest.client.ProgressMonitor;
+import com.atlassian.jira.rest.client.domain.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.atlassian.jira.rest.client.ProgressMonitor;
-import com.atlassian.jira.rest.client.domain.Field;
-
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.utils.MetadataGenLoader;
+
+import java.util.List;
 
 @Service
 public class JiraFieldLoader extends MetadataGenLoader<Field> {
@@ -21,7 +19,7 @@ public class JiraFieldLoader extends MetadataGenLoader<Field> {
 	public static final String EPIC_LINK_FIELD_NAME = "Epic Link ";
 	public static final String EPIC_NAME_FIELD_NAME = "Epic Name ";
 	public static final String ESTIMATION_ORIGINAL_NAME = "Estimation originale";
-	
+	public static final String REFERENCE_CLIENT_FIELD_NAME = "Reference client";
 	@Autowired
 	private IJiraRestClientV2 jiraConnection;
 

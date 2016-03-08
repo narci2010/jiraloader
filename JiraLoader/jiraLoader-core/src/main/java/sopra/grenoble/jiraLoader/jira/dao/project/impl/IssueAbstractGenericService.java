@@ -1,29 +1,19 @@
 package sopra.grenoble.jiraLoader.jira.dao.project.impl;
 
-import org.codehaus.jettison.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.ProgressMonitor;
-import com.atlassian.jira.rest.client.domain.BasicComponent;
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.Issue;
-import com.atlassian.jira.rest.client.domain.IssueType;
-import com.atlassian.jira.rest.client.domain.Priority;
-import com.atlassian.jira.rest.client.domain.Project;
+import com.atlassian.jira.rest.client.domain.*;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueInputJsonGenerator;
 import com.atlassian.jira.rest.client.internal.json.gen.IssueUpdateJsonGenerator;
-
-import sopra.grenoble.jiraLoader.exceptions.ComponentNotFoundException;
-import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
-import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
-import sopra.grenoble.jiraLoader.exceptions.JiraPriorityNotFoundException;
-import sopra.grenoble.jiraLoader.exceptions.ProjectNotFoundException;
+import org.codehaus.jettison.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import sopra.grenoble.jiraLoader.exceptions.*;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraPriorityLoader;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueGenericService;
@@ -99,7 +89,7 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 	protected IssueInputBuilder createGenericIssue(String projectName, String issueTypeName, String resume, String description, String priorityName, String componentName) throws ProjectNotFoundException, JiraIssueTypeException, ComponentNotFoundException, JiraPriorityNotFoundException {
 		// get the project
 		Project jiraProject = projectSrv.getProjectByName(projectName);
-		
+
 		// get the issueType description
 		IssueType issueType = issueTypeLoaderSrv.getElement(issueTypeName);
 		if (issueType == null) 
@@ -109,7 +99,7 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 		}
 		
 		IssueInputBuilder issueInB = new IssueInputBuilder(jiraProject.getKey(), issueType.getId());
-		
+
 		//set resume => mandatoryx
 		String cleanResume = (resume != null) ? resume.replaceAll("\r", " ").replaceAll("\n", " ") : null;
 		issueInB.setSummary(cleanResume);
