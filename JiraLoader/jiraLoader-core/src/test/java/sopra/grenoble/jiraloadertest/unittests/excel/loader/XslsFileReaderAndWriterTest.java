@@ -1,16 +1,15 @@
 package sopra.grenoble.jiraloadertest.unittests.excel.loader;
 
-import static org.junit.Assert.*;
+import org.apache.poi.ss.usermodel.Row;
+import org.junit.Test;
+import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.poi.ss.usermodel.Row;
-import org.junit.Test;
-
-import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
+import static org.junit.Assert.*;
 
 public class XslsFileReaderAndWriterTest {
 
@@ -72,4 +71,15 @@ public class XslsFileReaderAndWriterTest {
 		assertTrue(xlsrw.isLastRow());
 	}
 
+	@Test
+	public void findColumnNumberTest() throws IOException {
+		URL excelFileUrl = ClassLoader.getSystemClassLoader().getResource("excelTestFiles/Test_FindColumnNumber.xlsx");
+		File excelFile = new File(excelFileUrl.getPath());
+		XslsFileReaderAndWriter xlsrw = new XslsFileReaderAndWriter(excelFile);
+		xlsrw.openSheet(0);
+		Row row = xlsrw.readLine(0);
+		assertEquals(xlsrw.findColumnNumber(xlsrw, "Hello"), 1);
+		assertNotEquals(xlsrw.findColumnNumber(xlsrw, "Hello"), 2);
+
+	}
 }

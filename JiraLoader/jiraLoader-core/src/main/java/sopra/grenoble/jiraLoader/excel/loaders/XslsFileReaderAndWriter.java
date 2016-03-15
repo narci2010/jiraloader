@@ -1,12 +1,5 @@
 package sopra.grenoble.jiraLoader.excel.loaders;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Optional;
-
 import org.apache.poi.POIXMLException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,9 +7,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
 import sopra.grenoble.jiraLoader.exceptions.UnexpectedTypeLineException;
+
+import java.io.*;
+import java.util.Optional;
 
 /**
  * @author cmouilleron
@@ -159,14 +154,14 @@ public class XslsFileReaderAndWriter {
 	 */
 	public boolean isLastRow() {
 		final Row nextRow = sheetOpened.getRow(linePosition);
-		
 		//if nextrow is null, return lastLine = true
 		if (nextRow == null) {
 			return true;
 		}
 		
 		//if cell is null, return lastLine = true
-		final Cell cell = nextRow.getCell(1);
+		Row firstRow = sheetOpened.getRow(0);
+		final Cell cell = nextRow.getCell(findCellByName(firstRow, "Type de demande"));
 		if (cell == null) {
 			return true;
 		}
@@ -188,5 +183,31 @@ public class XslsFileReaderAndWriter {
 		} catch (IOException e) {
 			LOG.error("Unable to close the excel document");
 		}
+	}
+
+	public static int findColumnNumber(XslsFileReaderAndWriter excelLoader, String cellName) {
+		String valueFromCell;
+		int columnNumber = -1;
+		excelLoader.setRowPosition(0);
+		Row row = excelLoader.readNextRow();
+		for (int i = 0; i < row.getLastCellNum(); i++) {
+			valueFromCell = ExcelRowUtils.getStringValueFromRow(row, i).get();
+			if (valueFromCell.equals(cellName)) {
+				columnNumber = i;
+			}
+		}
+		return columnNumber;
+	}
+
+	public static int findCellByName(Row row, String cellName) {
+		String valueFromCell;
+		int columnNumber = -1;
+		for (int i = 0; i < row.getLastCellNum(); i++) {
+			Cell cell = row.getCell(i);
+			if (cell.getStringCellValue().equals("Type de demande")) {
+				columnNumber = i;
+			}
+		}
+		return columnNumber;
 	}
 }

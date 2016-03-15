@@ -1,9 +1,9 @@
 package sopra.grenoble.jiraLoader.excel.loaders;
 
-import java.util.Optional;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+
+import java.util.Optional;
 
 public class ExcelRowUtils {
 	
@@ -23,9 +23,15 @@ public class ExcelRowUtils {
 	 * @return {@link Optional}
 	 */
 	public static Optional<String> getStringValueFromRow(Row row, int columnPosition) {
-		return getCell(row, columnPosition).map((cell) -> {
-			return (cell.getStringCellValue().length() != 0) ? cell.getStringCellValue() : null;
-		});
+
+		if (columnPosition == -1) {
+			return null;
+		} else {
+			return getCell(row, columnPosition).map((cell) -> {
+				return (cell.getStringCellValue().length() != 0) ? cell.getStringCellValue() : null;
+			});
+		}
+
 	}
 	
 	/**

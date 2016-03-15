@@ -1,17 +1,15 @@
 package sopra.grenoble.jiraLoader.jira.dao.metadatas;
 
-import java.util.List;
-
+import com.atlassian.jira.rest.client.JiraRestClient;
+import com.atlassian.jira.rest.client.ProgressMonitor;
+import com.atlassian.jira.rest.client.domain.Priority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.ProgressMonitor;
-import com.atlassian.jira.rest.client.domain.Priority;
-
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.utils.MetadataGenLoader;
+
+import java.util.List;
 
 @Service
 public class JiraPriorityLoader extends MetadataGenLoader<Priority> {
@@ -33,11 +31,11 @@ public class JiraPriorityLoader extends MetadataGenLoader<Priority> {
 
 	@Override
 	public void loadElements() {
-		LOG.info("Loading Status");
+		LOG.info("Loading Priorities");
 		List<Priority> lstpriorities = (List<Priority>) jiraConnection.getMetadataClient().getPriorities(pm);
 		for (Priority p : lstpriorities) {
 			this.addElement(p.getName(), p);
 		}
-		LOG.info("Status loaded. " + lstpriorities.size() + " has been loaded");
+		LOG.info("Priorities loaded. " + lstpriorities.size() + " has been loaded");
 	}
 }

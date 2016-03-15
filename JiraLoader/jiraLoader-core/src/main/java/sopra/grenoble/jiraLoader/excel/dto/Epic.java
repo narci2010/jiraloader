@@ -15,6 +15,10 @@ public class Epic extends GenericModel {
 	public boolean validate() {
 		if (resume == null) return false;
 		if (composantName == null) return false;
+		if (clientReference != null) {
+			LOG.error("The field Client Reference in excel file should not be set");
+			return false;
+		}
 		if (epicName != null) {
 			LOG.error("The field Epic in excel file should not be set");
 			return false;
