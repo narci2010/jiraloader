@@ -235,11 +235,11 @@ public class IssueServiceTest {
 		
 		try {
 			//update the issue
-			issueSrv.updateIssue(bi1.getKey(), projectTestName, "normal");
+			issueSrv.updateIssue(bi1.getKey(), projectTestName, "non-prioritaire");
 			//test
 			Issue i = issueSrv.getByKey(bi1.getKey(), projectTestName);
 			assertNotNull(i);
-			assertEquals("priority is not correct", "normal", i.getPriority().getName());
+			assertEquals("priority is not correct", "non-prioritaire", i.getPriority().getName());
 		} finally {
 			//delete the issue
 			issueSrv.removeIssue(bi1.getKey(), true);
@@ -276,5 +276,16 @@ public class IssueServiceTest {
 		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), "clientRef", "resume", "description", "normal", componentName);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
+	}
+
+	@Test
+	public void updateCompletedStory_nothing() throws JiraGeneralException {
+		//Récuperer une story completed.
+		BasicIssue bi = issueSrv.getByKey("SFRGRO-950", "OPAL MASQUE");
+		System.out.println(bi.toString());
+
+		// Faire un update avec des valeurs différentes.
+		issueSrv.updateIssue(bi.getKey(), "OPAL MASQUE", "urgent");
+		// AssertEquals rien n'a changé.
 	}
 }

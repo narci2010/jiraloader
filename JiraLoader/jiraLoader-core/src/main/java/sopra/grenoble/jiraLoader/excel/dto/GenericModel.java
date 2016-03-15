@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sopra.grenoble.jiraLoader.excel.loaders.ExcelRowUtils;
+import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
  *
  */
 public abstract class GenericModel {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(GenericModel.class);
 
 	public String key;
@@ -26,7 +27,7 @@ public abstract class GenericModel {
 	public String priority;
 	public String composantName;
 	public String estimation;
-	
+
 	/**
 	 * @param key
 	 * @param typeDemande
@@ -65,17 +66,20 @@ public abstract class GenericModel {
 	 * Constructor based on {@link Row}
 	 * @param row
 	 */
-	public void loadRow(Row row) {
-		this.key = ExcelRowUtils.getStringValueFromRow(row,0).orElse(null);
-		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row,1).orElse(null);
-		this.epicName = ExcelRowUtils.getStringValueFromRow(row,2).orElse(null);
-		this.versionName = ExcelRowUtils.getStringValueFromRow(row,3).orElse(null);
-		this.clientReference = ExcelRowUtils.getStringValueFromRow(row, 4).orElse(null);
-		this.resume = ExcelRowUtils.getStringValueFromRow(row, 5).orElse(null);
-		this.descriptif = ExcelRowUtils.getStringValueFromRow(row, 6).orElse(null);
-		this.priority = ExcelRowUtils.getStringValueFromRow(row, 7).orElse(null);
-		this.composantName = ExcelRowUtils.getStringValueFromRow(row, 8).orElse(null);
-		this.estimation = ExcelRowUtils.getStringValueFromRow(row, 9).orElse(null);
+	public void loadRow(Row row, XslsFileReaderAndWriter excelLoader) {
+		this.key = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "ID")).orElse(null);
+		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).orElse(null);
+		this.epicName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Epics")).orElse(null);
+		this.versionName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version")).orElse(null);
+		// when findColumnNumber return -1, that means there is not column with "ColumnName" (Référence Client here).
+		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Référence Client") != -1) {
+			this.clientReference = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Référence Client")).orElse(null);
+		}
+		this.resume = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Résumé")).orElse(null);
+		this.descriptif = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Descriptif")).orElse(null);
+		this.priority = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Priorité")).orElse(null);
+		this.composantName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Composant")).orElse(null);
+		this.estimation = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Estimation Originale")).orElse(null);
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package sopra.grenoble.jiraloadertest.unittests;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import sopra.grenoble.jiraLoader.JiraLoader;
 import sopra.grenoble.jiraLoader.configurationbeans.ExcelDatas;
 import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
+import sopra.grenoble.jiraLoader.wrappers.StoryWrapper;
 import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 import java.io.File;
@@ -24,7 +26,7 @@ public class JiraLoaderTest extends JiraLoader {
 
 	@Autowired
 	private ExcelDatas excelFileDatasBean;
-	
+
 	@Test
 	public void configurationExcel_badNumberVersion_Test() throws Exception {
 		URL nonExcelFileUrl = ClassLoader.getSystemClassLoader().getResource("excelFilesValidationTests/Import_JIRA_VERSIONTOOLOW.xlsx");
@@ -66,7 +68,6 @@ public class JiraLoaderTest extends JiraLoader {
 
 		Integer confSheetNumber = null;
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
-
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			if (workbook.getSheetAt(i).getSheetName().equals("Configuration")) {
 				confSheetNumber = i;
@@ -77,4 +78,25 @@ public class JiraLoaderTest extends JiraLoader {
 		XslsFileReaderAndWriter excelLoader = new XslsFileReaderAndWriter(excelFile);
 		assertTrue(this.loadConfigurationAndValidateExcelFormat(excelLoader, confSheetNumber));
 	}
+
+	@Test
+	public void lectureFichierOrdreAléatoireTest() throws Exception {
+		String path = "excelTestFiles/Import_JIRA_Ordre_Aleatoire.xlsx";
+
+		URL excelFileUrl = ClassLoader.getSystemClassLoader().getResource(path);
+		FileInputStream fis = new FileInputStream(excelFileUrl.getPath());
+		assertNotNull(fis);
+
+		XSSFWorkbook workbook = new XSSFWorkbook(fis);
+		File excelFile = new File(excelFileUrl.getPath());
+		XslsFileReaderAndWriter excelLoader = new XslsFileReaderAndWriter(excelFile);
+		excelLoader.openSheet(1);
+		excelLoader.setRowPosition(1);
+		StoryWrapper wrapper = new StoryWrapper();
+		Row row = excelLoader.readNextRow();
+		wrapper.loadRow(row, excelLoader);
+		assertFalse(true);
+		//Ce test est bloqué exprès en attendant d'avoir trouvé la méthode pour bien tester la lecture de la ligne, cependant la vérification est possible par la lecture du log create dto : ...
+	}
+
 }

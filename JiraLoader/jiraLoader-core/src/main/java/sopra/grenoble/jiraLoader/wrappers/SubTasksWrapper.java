@@ -1,13 +1,10 @@
 package sopra.grenoble.jiraLoader.wrappers;
 
+import com.atlassian.jira.rest.client.domain.BasicIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-
-import sopra.grenoble.jiraLoader.excel.dto.Story;
 import sopra.grenoble.jiraLoader.excel.dto.SubTasks;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
@@ -42,8 +39,12 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 	
 	@Override
 	public void updateInJira(SubTasks s) throws JiraGeneralException {
-		subTSrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
-		LOG.info(getLogPrefixe() + "SubTasks with KEY : " + s.key + " has been updated");
+		if (excelConfigurationDatas.isUpdatingStoryAndSubTaks()) {
+			subTSrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
+			LOG.info(getLogPrefixe() + "SubTasks with KEY : " + s.key + " has been updated");
+		} else {
+			LOG.info(getLogPrefixe() + "SubTasks with KEY : " + s.key + " has not been updated.(Settings: Allow Subtasks update false)");
+		}
 	}
 
 }

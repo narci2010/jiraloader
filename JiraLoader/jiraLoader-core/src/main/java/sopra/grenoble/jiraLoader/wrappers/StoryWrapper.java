@@ -53,11 +53,15 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 
 	@Override
 	public void updateInJira(Story s) throws JiraGeneralException {
-		storySrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
-		LOG.info(getLogPrefixe() + "Story with KEY : " + s.key + " has been updated");
+		if (excelConfigurationDatas.isAllowingUpdate()) {
+			storySrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
+			LOG.info(getLogPrefixe() + "Story with KEY : " + s.key + " has been updated");
+		} else {
+			LOG.info(getLogPrefixe() + "Story with KEY : " + s.key + "has not been updated.(Settings: Allow Story update false)");
+		}
 	}
-	
-	
+
+
 	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) {
 		String storyName = fullStoryName.split("\\|")[0].trim();
 		return storySrv.getByStartingName(storyName, projectName);

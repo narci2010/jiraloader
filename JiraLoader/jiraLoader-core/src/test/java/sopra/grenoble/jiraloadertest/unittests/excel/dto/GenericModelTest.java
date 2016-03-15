@@ -1,10 +1,6 @@
 package sopra.grenoble.jiraloadertest.unittests.excel.dto;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
-import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
 import sopra.grenoble.jiraLoader.excel.dto.Version;
 
 public class GenericModelTest {

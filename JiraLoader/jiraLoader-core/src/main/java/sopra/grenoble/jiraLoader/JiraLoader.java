@@ -155,7 +155,20 @@ public class JiraLoader {
 			LOG.warn("No configuration at line 2,5. Set default value to false");
 			return false;
 		}));
-		
+
+		// load the configuration value for allowing update
+
+		excelFileDatasBean.setAllowUpdate(excelLoader.readBooleanCellContent(3, 5).orElseGet(() -> {
+			LOG.warn("Non configuration at line 3,5. Set default value to false");
+			return false;
+		}));
+
+		// load the configuration value : reverberate update from Story to subtask
+		excelFileDatasBean.setUpdateStoryAndSubTasks(excelLoader.readBooleanCellContent(4, 5).orElseGet(() -> {
+			LOG.warn("Non configuration at line 4,5. Set default value to false");
+			return false;
+		}));
+
 		return true;
 	}
 
@@ -167,16 +180,17 @@ public class JiraLoader {
 	private void injectAllRows(XslsFileReaderAndWriter excelLoader, Integer pageNumber) {
 		// skip header
 		excelLoader.openSheet(pageNumber);
-		excelLoader.setRowPosition(1);
-
+		int i = 1;
+		boolean lastRow = false;
 		do {
+			excelLoader.setRowPosition(i);
 			final Row row = excelLoader.readNextRow();
-			
-			String typeDemande = row.getCell(1).getStringCellValue();
-			AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(typeDemande);
+			lastRow = !excelLoader.isLastRow();
 
+			String typeDemande = row.getCell(XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).getStringCellValue();
+			AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(typeDemande);
 			// load the row
-			GenericModel genModel = wrapper.loadRow(row);
+			GenericModel genModel = wrapper.loadRow(row, excelLoader);
 
 			try {
 				// call create or update line
@@ -196,7 +210,8 @@ public class JiraLoader {
 				LOG.debug("Save last story key : " + genModel.key);
 				jiraUserDatasBean.setLastStoryKey(genModel.key);
 			}
-		} while (!excelLoader.isLastRow());
+			i++;
+		} while (lastRow);
 
 		LOG.info("Injection is done !!! Good game !!!");
 	}
@@ -209,41 +224,43 @@ public class JiraLoader {
 	 */
 	private boolean validateAllRows(XslsFileReaderAndWriter excelLoader, Integer pageNumber) {
 		// skip header
+		int i = 1;
 		excelLoader.openSheet(pageNumber);
-		excelLoader.setRowPosition(1);
 		boolean allLineOK = true;
 		boolean atLeastOneDataFound = false;
-
-		while (!excelLoader.isLastRow()) {
+		boolean lastRow = false;
+		do {
+			excelLoader.setRowPosition(i);
+			Row row = excelLoader.readNextRow();
 			atLeastOneDataFound = true;
-
-			final Row row = excelLoader.readNextRow();
-
+			lastRow = !excelLoader.isLastRow();
 			try {
-				String typeDemande = row.getCell(1).getStringCellValue();
+				String typeDemande = row.getCell(XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).getStringCellValue();
 				if (typeDemande == null) {
 					throw new UnexpectedTypeLineException();
 				}
-				
+
 				AbstractWrapper<? extends GenericModel> wrapper = wrapperFact.getWrapper(typeDemande);
 				if (wrapper == null) {
 					throw new UnexpectedTypeLineException();
 				}
 				// load the row
-				wrapper.loadRow(row);
+				wrapper.loadRow(row, excelLoader);
 
 				// validate the row
 				if (!wrapper.validateRow()) {
 					allLineOK = false;
 				}
 			} catch (JiraGeneralException e) {
-				LOG.error("Row <" + row.getRowNum() + "> JIRA has raised an exception. I can't do anything for you...",e);
-				allLineOK = false;
+				LOG.error("Row <" + row.getRowNum() + "> JIRA has raised an exception. I can't do anything for you...", e);
+					allLineOK = false;
 			} catch (UnexpectedTypeLineException e) {
 				LOG.error("Row <" + row.getRowNum() + "> The typeDemande value is not support by the application", e);
 				allLineOK = false;
-			}
+				}
+			i++;
 		}
+		while (lastRow);
 		
 		if (atLeastOneDataFound == false) {
 			//no line in the excel file

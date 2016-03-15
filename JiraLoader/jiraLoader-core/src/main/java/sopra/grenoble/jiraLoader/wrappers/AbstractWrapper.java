@@ -1,19 +1,19 @@
 package sopra.grenoble.jiraLoader.wrappers;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import sopra.grenoble.jiraLoader.configurationbeans.ExcelDatas;
 import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
+import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IProjectService;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * @author cmouilleron
@@ -50,9 +50,7 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 	
 	@Autowired
 	protected ExcelDatas excelConfigurationDatas;
-	
-	@Autowired
-	protected ExcelDatas excelDatas;
+
 	
 
 	/**
@@ -83,8 +81,8 @@ public abstract class AbstractWrapper<E extends GenericModel> {
 	 * @param row
 	 * @return 
 	 */
-	public E loadRow(Row row) {
-		this.dtoExcelModel.loadRow(row);
+	public E loadRow(Row row, XslsFileReaderAndWriter excelLoader) {
+		this.dtoExcelModel.loadRow(row, excelLoader);
 		this.excelRow = row;
 		LOG.debug(getLogPrefixe() + "Create DTO with following datas " + this.dtoExcelModel.toString());
 		return this.dtoExcelModel;

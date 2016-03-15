@@ -70,4 +70,16 @@ public class XslsFileReaderAndWriterTest {
 		xlsrw.setRowPosition(100);
 		assertTrue(xlsrw.isLastRow());
 	}
+
+	@Test
+	public void findColumnNumberTest() throws IOException {
+		URL excelFileUrl = ClassLoader.getSystemClassLoader().getResource("excelTestFiles/Test_FindColumnNumber.xlsx");
+		File excelFile = new File(excelFileUrl.getPath());
+		XslsFileReaderAndWriter xlsrw = new XslsFileReaderAndWriter(excelFile);
+		xlsrw.openSheet(0);
+		Row row = xlsrw.readLine(0);
+		assertEquals(xlsrw.findColumnNumber(xlsrw, "Hello"), 1);
+		assertNotEquals(xlsrw.findColumnNumber(xlsrw, "Hello"), 2);
+
+	}
 }

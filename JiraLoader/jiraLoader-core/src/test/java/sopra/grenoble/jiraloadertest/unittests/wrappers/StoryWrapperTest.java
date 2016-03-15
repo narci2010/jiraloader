@@ -84,5 +84,20 @@ public class StoryWrapperTest {
 		assertNotNull(s.key);
 		storySrv.removeIssue(s.key, true);
 	}
+
+	@Test
+	public void insertStory_withoutClientRef_Test() throws Exception {
+		Story s = new Story();
+		s.epicName = "TOTO";
+		s.versionName = versionName;
+		s.resume = "resume";
+		s.composantName = componentName;
+		assertTrue(s.validate());
+
+		wrapper.insertInJira(s);
+
+		assertNotNull(s.key);
+		storySrv.removeIssue(s.key, true);
+	}
 	
 }

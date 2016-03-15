@@ -178,9 +178,10 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	
 	@Override
 	public void updateIssue(String issueKey, String projectName, String priority) throws IssueNotFoundException, JiraGeneralException {
-		Issue issue = getByKey(issueKey, projectName);
 
+		Issue issue = getByKey(issueKey, projectName);
 		List<FieldInput> lstFields = new ArrayList<>();
+
 		issue.getPriority().getId();
 
 		//set priority (optional)
@@ -193,9 +194,11 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 
 			lstFields.add(new FieldInput("priority", ComplexIssueInputFieldValue.with("id", ""+p.getId())));
 		}
-		
-		if (lstFields.size() != 0) {
+		// check status of the Story & update her if !Completed
+		if (lstFields.size() != 0 && !(new Long(10007).equals(issue.getStatus().getId()))) {
 			this.updateIssueInJira(issue, lstFields);
+		} else if (new Long(10007).equals(issue.getStatus().getId())) {
+			LOG.info("Story was completed, nothing was updated");
 		}
 	}
 	

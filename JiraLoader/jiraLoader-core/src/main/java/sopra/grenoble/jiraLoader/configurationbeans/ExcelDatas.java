@@ -17,13 +17,33 @@ public class ExcelDatas {
 	 */
 	private boolean searchStoryByNameBeforeCreate = false;
 
+	private boolean allowUpdate = false;
+
+	private boolean updateStoryAndSubTasks = false;
+
 	
 	
 	public boolean isSearchStoryByNameBeforeCreate() {
 		return searchStoryByNameBeforeCreate;
 	}
 
+	public boolean isAllowingUpdate() {
+		return allowUpdate;
+	}
+
+	public boolean isUpdatingStoryAndSubTaks() {
+		return updateStoryAndSubTasks;
+	}
+
 	public void setSearchStoryByNameBeforeCreate(boolean searchStoryByNameBeforeCreate) {
 		this.searchStoryByNameBeforeCreate = searchStoryByNameBeforeCreate;
+	}
+
+	public void setAllowUpdate(boolean allowUpdate) {
+		this.allowUpdate = allowUpdate;
+	}
+
+	public void setUpdateStoryAndSubTasks(boolean updateStoryAndSubTasks) {
+		this.updateStoryAndSubTasks = updateStoryAndSubTasks;
 	}
 }
