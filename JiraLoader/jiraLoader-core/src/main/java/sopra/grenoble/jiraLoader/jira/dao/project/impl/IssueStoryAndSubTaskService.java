@@ -149,6 +149,9 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		List<Version> versions = new ArrayList<>();
 		versions.add(v);
 		iib.setAffectedVersions(versions);
+		if (excelConfigurationDatas.isAllowAffectedAndFixVersion()) {
+			iib.setFixVersions(versions);
+		}
 	}
 	
 	/**

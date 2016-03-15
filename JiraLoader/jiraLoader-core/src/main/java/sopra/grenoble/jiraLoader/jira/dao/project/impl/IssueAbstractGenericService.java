@@ -13,6 +13,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import sopra.grenoble.jiraLoader.configurationbeans.ExcelDatas;
 import sopra.grenoble.jiraLoader.exceptions.*;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraPriorityLoader;
@@ -37,6 +38,9 @@ public abstract class IssueAbstractGenericService implements IIssueGenericServic
 	
 	@Autowired
 	protected JiraPriorityLoader priorityLoader;
+
+	@Autowired
+	protected ExcelDatas excelConfigurationDatas;
 
 	@Override
 	public Issue getByKey(String key, String projectName) throws IssueNotFoundException, JiraIssueTypeException {

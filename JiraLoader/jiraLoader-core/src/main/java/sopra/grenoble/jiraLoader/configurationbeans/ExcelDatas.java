@@ -21,7 +21,11 @@ public class ExcelDatas {
 
 	private boolean updateStoryAndSubTasks = false;
 
-	
+	private boolean allowAffectedAndFixVersion = false;
+
+	public boolean isAllowAffectedAndFixVersion() {
+		return allowAffectedAndFixVersion;
+	}
 	
 	public boolean isSearchStoryByNameBeforeCreate() {
 		return searchStoryByNameBeforeCreate;
@@ -45,5 +49,9 @@ public class ExcelDatas {
 
 	public void setUpdateStoryAndSubTasks(boolean updateStoryAndSubTasks) {
 		this.updateStoryAndSubTasks = updateStoryAndSubTasks;
+	}
+
+	public void setAllowAffectedAndFixVersion(boolean allowAffectedAndFixVersion) {
+		this.allowAffectedAndFixVersion = allowAffectedAndFixVersion;
 	}
 }
