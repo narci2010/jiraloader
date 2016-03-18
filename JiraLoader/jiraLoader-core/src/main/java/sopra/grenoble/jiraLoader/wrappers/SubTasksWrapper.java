@@ -39,7 +39,7 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 	
 	@Override
 	public void updateInJira(SubTasks s) throws JiraGeneralException {
-		if (excelConfigurationDatas.isUpdatingStoryAndSubTaks()) {
+		if (excelConfigurationDatas.isUpdatingStoryAndSubTasks()) {
 			subTSrv.updateIssue(s.key, jiraUserDatas.getProjectName(), s.priority);
 			LOG.info(getLogPrefixe() + "SubTasks with KEY : " + s.key + " has been updated");
 		} else {

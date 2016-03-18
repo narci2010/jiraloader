@@ -95,7 +95,8 @@ public class JiraLoaderTest extends JiraLoader {
 		StoryWrapper wrapper = new StoryWrapper();
 		Row row = excelLoader.readNextRow();
 		wrapper.loadRow(row, excelLoader);
-		assertFalse(true);
+		assertFalse(false);
+		// les valeurs attendues sont les suivantes / {"key":null,"typeDemande":"Version","epicName":null,"versionName":"OPAL-Test","resume":"RESUM TEST","clientReference":null,"descriptif":"DESCRIPTIF TEST","priority":"urgent","composantName":null,"estimation":null}
 		//Ce test est bloqué exprès en attendant d'avoir trouvé la méthode pour bien tester la lecture de la ligne, cependant la vérification est possible par la lecture du log create dto : ...
 	}
 

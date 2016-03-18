@@ -163,12 +163,6 @@ public class JiraLoader {
 			return false;
 		}));
 
-		// load the configuration value : allow both versions (affected & fixed)
-		excelFileDatasBean.setAllowAffectedAndFixVersion(excelLoader.readBooleanCellContent(5, 5).orElseGet(() -> {
-			LOG.warn("No configuration at line 5,5. Set default value to false");
-			return false;
-		}));
-
 		// load the configuration value : reverberate update from Story to subtask
 		excelFileDatasBean.setUpdateStoryAndSubTasks(excelLoader.readBooleanCellContent(4, 5).orElseGet(() -> {
 			LOG.warn("No configuration at line 4,5. Set default value to false");

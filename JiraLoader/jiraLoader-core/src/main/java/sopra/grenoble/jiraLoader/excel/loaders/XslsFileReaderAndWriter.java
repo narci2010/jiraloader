@@ -185,6 +185,11 @@ public class XslsFileReaderAndWriter {
 		}
 	}
 
+	/**
+	 * @param excelLoader
+	 * @param cellName
+	 * @return columnNumber or -1 if column doesn't exist.
+	 */
 	public static int findColumnNumber(XslsFileReaderAndWriter excelLoader, String cellName) {
 		String valueFromCell;
 		int columnNumber = -1;
@@ -199,12 +204,18 @@ public class XslsFileReaderAndWriter {
 		return columnNumber;
 	}
 
+	/**
+	 *
+	 * @param row
+	 * @param cellName
+	 * @return columnNumber or -1 if cellName doesn't exist
+	 */
 	public static int findCellByName(Row row, String cellName) {
 		String valueFromCell;
 		int columnNumber = -1;
 		for (int i = 0; i < row.getLastCellNum(); i++) {
 			Cell cell = row.getCell(i);
-			if (cell.getStringCellValue().equals("Type de demande")) {
+			if (cell.getStringCellValue().equals(cellName)) {
 				columnNumber = i;
 			}
 		}

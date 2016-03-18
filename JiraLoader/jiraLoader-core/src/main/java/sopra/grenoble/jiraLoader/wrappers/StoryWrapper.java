@@ -43,7 +43,7 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 			s.key = String.valueOf(bi.get().getKey());
 			updateRowInJira();
 		} else {
-			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.clientReference, s.resume, s.descriptif, s.priority, s.composantName));
+			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.clientReference, s.resume, s.descriptif, s.priority, s.composantName, s.versionCorrected, s.versionAffected));
 			LOG.info(getLogPrefixe() + "Story has been created with KEY : " + bi.get().getKey());
 		}
 

@@ -82,14 +82,14 @@ public class IssueServiceTest {
 	
 	@Test
 	public void createStoryAndDeleteIssue() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
 	@Test
 	public void createStoryAndSubTaskAndDeleteAll() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		//Create sub task
 		try {
@@ -102,7 +102,7 @@ public class IssueServiceTest {
 	
 	@Test
 	public void createStoryAndSubTaskWithoutPriority() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", null, componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", null, componentName, null, null);
 		assertNotNull(bi);
 		//Create sub task
 		try {
@@ -115,7 +115,7 @@ public class IssueServiceTest {
 	
 	@Test
 	public void createStoryAndSubTaskWithoutDescriptionAndDeleteAll() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", null, "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", null, "normal", componentName, null, null);
 		assertNotNull(bi);
 		//Create sub task
 		try {
@@ -133,35 +133,35 @@ public class IssueServiceTest {
 	
 	@Test
 	public void createStoryWithEpic() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
 	@Test
 	public void createStoryWithoutEpic() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, null, "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
 	@Test
 	public void createStoryWithEpicWithoutDescription() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "resume", null, "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "resume", null, "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
 	@Test
 	public void createStoryWithoutPriority() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "resume", "description", null, componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "resume", "description", null, componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
 	@Test
 	public void createStoryWithVersion() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
@@ -171,24 +171,24 @@ public class IssueServiceTest {
 	 */
 	@Test(expected=VersionNotFoundException.class)
 	public void createStoryWithBadVersion() throws JiraGeneralException {
-		issueSrv.createStory(projectTestName, null, "BADVERSION", "clientRef", "resume", "description", "normal", componentName);
+		issueSrv.createStory(projectTestName, null, "BADVERSION", "clientRef", "resume", "description", "normal", componentName, null, null);
 	}
 	
 	@Test
 	public void createStoryWithSpecialChar() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "clientRef", "resume\nOK", "description\nOK", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, null, v.getName(), "clientRef", "resume\nOK", "description\nOK", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 	
 	@Test(expected=JiraEpicNotFound.class)
 	public void createStoryWithBadEpics() throws JiraGeneralException {
-		issueSrv.createStory(projectTestName, "LOLOLOLO", v.getName(), "clientRef", "resume", "description\nOK", "normal", componentName);
+		issueSrv.createStory(projectTestName, "LOLOLOLO", v.getName(), "clientRef", "resume", "description\nOK", "normal", componentName, null, null);
 	}
 
 	@Test
 	public void createStoryWithFullOptionAndSubTasksWithFullOption() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		//Create sub task
 		try {
@@ -208,9 +208,9 @@ public class IssueServiceTest {
 	
 	@Test
 	public void getByStartingName_FoundTest() throws Exception {
-		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO1 | test 1", "description", "normal", componentName);
-		BasicIssue bi2 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO2 | test 2", "description", "normal", componentName);
-		BasicIssue bi3 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO3 | test 3", "description", "normal", componentName);
+		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO1 | test 1", "description", "normal", componentName, null, null);
+		BasicIssue bi2 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO2 | test 2", "description", "normal", componentName, null, null);
+		BasicIssue bi3 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO3 | test 3", "description", "normal", componentName, null, null);
 		
 		try {
 			Optional <BasicIssue> basicIssue = issueSrv.getByStartingName("XXX_TOTO2", projectTestName);
@@ -231,7 +231,7 @@ public class IssueServiceTest {
 	@Test
 	public void updateStory_ok_Test() throws IssueNotFoundException, JiraGeneralException {
 		//create one issue
-		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO1 | test 1", "description", "normal", componentName);
+		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO1 | test 1", "description", "normal", componentName, null, null);
 		
 		try {
 			//update the issue
@@ -249,7 +249,7 @@ public class IssueServiceTest {
 	@Test
 	public void updateStory_nothing_Test() throws IssueNotFoundException, JiraGeneralException {
 		//create one issue
-		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO1 | test 1", "description", "normal", componentName);
+		BasicIssue bi1 = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "clientRef", "XXX_TOTO1 | test 1", "description", "normal", componentName, null, null);
 		
 		try {
 			//update the issue
@@ -266,26 +266,65 @@ public class IssueServiceTest {
 
 	@Test
 	public void createStoryWithoutClientReference() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), null, "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), null, "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 
 	@Test
 	public void createStoryWithClientReference() throws JiraGeneralException {
-		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), "clientRef", "resume", "description", "normal", componentName);
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", v.getName(), "clientRef", "resume", "description", "normal", componentName, null, null);
 		assertNotNull(bi);
 		issueSrv.removeIssue(bi.getKey(), true);
 	}
 
 	@Test
-	public void updateCompletedStory_nothing() throws JiraGeneralException {
-		//Récuperer une story completed.
-		BasicIssue bi = issueSrv.getByKey("SFRGRO-950", "OPAL MASQUE");
-		System.out.println(bi.toString());
-
-		// Faire un update avec des valeurs différentes.
-		issueSrv.updateIssue(bi.getKey(), "OPAL MASQUE", "urgent");
-		// AssertEquals rien n'a changé.
+	public void createStoryWithAffectedVersion() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "ref client", "resume", "description", "normal", componentName, null, v.getName());
+		assertNotNull(bi);
+		issueSrv.removeIssue(bi.getKey(), true);
 	}
+
+	@Test
+	public void createStoryWithCorrectedVersion() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "ref client", "resume", "description", "normal", componentName, v.getName(), null);
+		assertNotNull(bi);
+		issueSrv.removeIssue(bi.getKey(), true);
+	}
+
+	@Test
+	public void createStoryWithBothVersionsAffectedAndCorrected() throws JiraGeneralException {
+		BasicIssue bi = issueSrv.createStory(projectTestName, "EpicTestSummary", null, "ref client", "resume", "description", "normal", componentName, v.getName(), v.getName());
+	}
+	/*
+	@Test
+	public void removeJiraIssues() throws JiraGeneralException{
+		BasicIssue bi = issueSrv.getByKey("SFRGRO-1617","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1616","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1615","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1516","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1515","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1514","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1513","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1512","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1511","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1510","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1509","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1508","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+		bi = issueSrv.getByKey("SFRGRO-1507","OPAL MASQUE");
+		issueSrv.removeIssue(bi.getKey(),true);
+	}
+	*/
 }
