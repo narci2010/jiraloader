@@ -27,6 +27,8 @@ public abstract class GenericModel {
 	public String priority;
 	public String composantName;
 	public String estimation;
+	public String versionCorrected;
+	public String versionAffected;
 
 	/**
 	 * @param key
@@ -41,7 +43,7 @@ public abstract class GenericModel {
 	 * @param estimation
 	 */
 	public GenericModel(String key, String typeDemande, String epicName, String versionName, String clientReference, String resume,
-						String descriptif, String priority, String composantName, String estimation) {
+						String descriptif, String priority, String composantName, String estimation, String versionCorrected, String versionAffected) {
 		super();
 		this.key = key;
 		this.typeDemande = typeDemande;
@@ -53,6 +55,8 @@ public abstract class GenericModel {
 		this.priority = priority;
 		this.composantName = composantName;
 		this.estimation = estimation;
+		this.versionCorrected = versionCorrected;
+		this.versionAffected = versionAffected;
 	}
 	
 	/**
@@ -71,6 +75,12 @@ public abstract class GenericModel {
 		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).orElse(null);
 		this.epicName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Epics")).orElse(null);
 		this.versionName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version")).orElse(null);
+		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée") != -1) {
+			this.versionAffected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée")).orElse(null);
+		}
+		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée") != -1) {
+			this.versionCorrected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée")).orElse(null);
+		}
 		// when findColumnNumber return -1, that means there is not column with "ColumnName" (Référence Client here).
 		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Référence Client") != -1) {
 			this.clientReference = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Référence Client")).orElse(null);
@@ -80,6 +90,7 @@ public abstract class GenericModel {
 		this.priority = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Priorité")).orElse(null);
 		this.composantName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Composant")).orElse(null);
 		this.estimation = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Estimation Originale")).orElse(null);
+
 	}
 	
 	@Override

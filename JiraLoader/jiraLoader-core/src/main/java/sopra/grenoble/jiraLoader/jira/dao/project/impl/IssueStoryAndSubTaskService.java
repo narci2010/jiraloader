@@ -30,7 +30,7 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	@Autowired private JiraFieldLoader fieldLoader;
 
 	@Override
-	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume, String description, String priority, String componentName) throws JiraGeneralException {
+	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume, String description, String priority, String componentName, String versionCorrected, String versionAffected) throws JiraGeneralException {
 		//call generic builder
 		IssueInputBuilder iib = createGenericIssue(projectName,  JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME, resume, description, priority, componentName);
 		
@@ -50,7 +50,16 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		}
 		//add version
 		if (versionName != null) {
-			addFixVersion(iib, projectName, versionName);
+			addAffectedVersion(iib, projectName, versionName);
+		}
+		// add correctedVersion
+		if (versionCorrected != null) {
+			addFixVersion(iib, projectName, versionCorrected);
+		}
+
+		// add affected version
+		if (versionAffected != null) {
+			addAffectedVersion(iib, projectName, versionAffected);
 		}
 				
 		//insert in JIRA
@@ -82,7 +91,7 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		}
 		//add in the same epic
 		//Not allowed in our screen JIRA. Subtask is automatically in the same epic as the parent
-		
+
 		//add same versions as the parent
 		List<Version> parentVersions = (List<Version>) parentIssue.getAffectedVersions();
 		if (parentVersions != null && parentVersions.size() != 0) {
@@ -143,15 +152,20 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	 * @param versionName
 	 * @throws VersionNotFoundException
 	 */
-	private void addFixVersion(IssueInputBuilder iib, String projectName, String versionName) throws VersionNotFoundException {
+	private void addAffectedVersion(IssueInputBuilder iib, String projectName, String versionName) throws VersionNotFoundException {
 		//get version from name
 		Version v = versionSrv.getVersion(projectName, versionName);
 		List<Version> versions = new ArrayList<>();
 		versions.add(v);
 		iib.setAffectedVersions(versions);
-		if (excelConfigurationDatas.isAllowAffectedAndFixVersion()) {
-			iib.setFixVersions(versions);
-		}
+	}
+
+	private void addFixVersion(IssueInputBuilder iib, String projectName, String versionName) throws VersionNotFoundException {
+		// get version from name
+		Version v = versionSrv.getVersion(projectName, versionName);
+		List<Version> versions = new ArrayList<>();
+		versions.add(v);
+		iib.setFixVersions(versions);
 	}
 	
 	/**
