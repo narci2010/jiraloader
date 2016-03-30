@@ -86,6 +86,11 @@ public abstract class GenericModel {
 		this.composantName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Composant")).orElse(null);
 		this.estimation = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Estimation Originale")).orElse(null);
 
+		if ("Story".equals(this.typeDemande) && this.clientReference != null) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.clientReference + " | " + this.resume);
+			this.resume = stringBuilder.toString();
+		}
 	}
 	
 	@Override

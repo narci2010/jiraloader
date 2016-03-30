@@ -34,8 +34,13 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 		Optional<BasicIssue> bi = Optional.empty();
 		//if option checkStoryExist is activated, check if the story is existing in JIRA
 		if (excelConfigurationDatas.isSearchStoryByNameBeforeCreate()) {
-			LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.resume);
-			bi = getStoryIfExist(s.resume, jiraUserDatas.getProjectName());
+			if (s.clientReference != null) {
+				bi = getStoryIfExistWithClientReference(s.clientReference, jiraUserDatas.getProjectName());
+				LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.clientReference);
+			} else {
+				bi = getStoryIfExist(s.resume, jiraUserDatas.getProjectName());
+				LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.resume);
+			}
 		}
 		
 		if (bi.isPresent()) {
@@ -65,6 +70,10 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) {
 		String storyName = fullStoryName.split("\\|")[0].trim();
 		return storySrv.getByStartingName(storyName, projectName);
+	}
+
+	private Optional<BasicIssue> getStoryIfExistWithClientReference(String clientReference, String projectName) {
+		return storySrv.getByStartingName(clientReference, projectName);
 	}
 	
 }
