@@ -28,7 +28,6 @@ public abstract class GenericModel {
 	public String composantName;
 	public String estimation;
 	public String versionCorrected;
-	public String versionAffected;
 
 	/**
 	 * @param key
@@ -43,7 +42,7 @@ public abstract class GenericModel {
 	 * @param estimation
 	 */
 	public GenericModel(String key, String typeDemande, String epicName, String versionName, String clientReference, String resume,
-						String descriptif, String priority, String composantName, String estimation, String versionCorrected, String versionAffected) {
+						String descriptif, String priority, String composantName, String estimation, String versionCorrected) {
 		super();
 		this.key = key;
 		this.typeDemande = typeDemande;
@@ -56,7 +55,6 @@ public abstract class GenericModel {
 		this.composantName = composantName;
 		this.estimation = estimation;
 		this.versionCorrected = versionCorrected;
-		this.versionAffected = versionAffected;
 	}
 	
 	/**
@@ -75,9 +73,6 @@ public abstract class GenericModel {
 		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).orElse(null);
 		this.epicName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Epics")).orElse(null);
 		this.versionName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version")).orElse(null);
-		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée") != -1) {
-			this.versionAffected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée")).orElse(null);
-		}
 		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée") != -1) {
 			this.versionCorrected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée")).orElse(null);
 		}

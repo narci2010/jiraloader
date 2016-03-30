@@ -13,7 +13,6 @@ public class SubTasks extends GenericModel {
 
 	@Override
 	public boolean validate() {
-		//if (versionName == null) return false; TODO: idem todo story.
 		if (resume == null) return false;
 		if (composantName == null) return false;
 		if (clientReference != null) {

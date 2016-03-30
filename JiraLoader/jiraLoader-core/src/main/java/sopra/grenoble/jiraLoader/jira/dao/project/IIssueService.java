@@ -12,7 +12,7 @@ public interface IIssueService extends IIssueGenericService {
 			String description, String priority, String estimation, String componentName) throws JiraGeneralException;
 
 	BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume,
-						   String description, String priority, String componentName, String versionCorrected, String versionAffected)
+						   String description, String priority, String componentName, String versionCorrected)
 					throws JiraGeneralException;
 
 	/**

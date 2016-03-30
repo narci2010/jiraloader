@@ -30,7 +30,7 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	@Autowired private JiraFieldLoader fieldLoader;
 
 	@Override
-	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume, String description, String priority, String componentName, String versionCorrected, String versionAffected) throws JiraGeneralException {
+	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume, String description, String priority, String componentName, String versionCorrected) throws JiraGeneralException {
 		//call generic builder
 		IssueInputBuilder iib = createGenericIssue(projectName,  JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME, resume, description, priority, componentName);
 		
@@ -55,11 +55,6 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		// add correctedVersion
 		if (versionCorrected != null) {
 			addFixVersion(iib, projectName, versionCorrected);
-		}
-
-		// add affected version
-		if (versionAffected != null) {
-			addAffectedVersion(iib, projectName, versionAffected);
 		}
 				
 		//insert in JIRA
