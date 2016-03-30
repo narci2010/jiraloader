@@ -36,7 +36,7 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 		if (excelConfigurationDatas.isSearchStoryByNameBeforeCreate()) {
 			if (s.clientReference != null) {
 				bi = getStoryIfExistWithClientReference(s.clientReference, jiraUserDatas.getProjectName());
-				LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.clientReference);
+				LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with client reference : " + s.clientReference);
 			} else {
 				bi = getStoryIfExist(s.resume, jiraUserDatas.getProjectName());
 				LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.resume);
