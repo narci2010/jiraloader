@@ -1,17 +1,15 @@
 package sopra.grenoble.jiraLoader.jira.dao.project.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Field;
 import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
@@ -43,6 +41,7 @@ public class IssueEpicService extends IssueAbstractGenericService implements IIs
 		SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
 		for (BasicIssue epicIssue : sr.getIssues()) {
 			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
+			//TODO: peut etre qu'un compteur à cet endroit permettrai de vérifier l'unicité de l'épic. Si count = 1 return is sinon Exception !!
 			try {
 				Issue is = getByKey(epicIssue.getKey(), projectName);
 				if (is.getSummary().compareTo(epicName) == 0) {
