@@ -28,6 +28,7 @@ public abstract class GenericModel {
 	public String composantName;
 	public String estimation;
 	public String versionCorrected;
+	public String linkTargetName;
 
 	/**
 	 * @param key
@@ -42,7 +43,7 @@ public abstract class GenericModel {
 	 * @param estimation
 	 */
 	public GenericModel(String key, String typeDemande, String epicName, String versionName, String clientReference, String resume,
-						String descriptif, String priority, String composantName, String estimation, String versionCorrected) {
+						String descriptif, String priority, String composantName, String estimation, String versionCorrected, String linkTargetName) {
 		super();
 		this.key = key;
 		this.typeDemande = typeDemande;
@@ -73,6 +74,7 @@ public abstract class GenericModel {
 		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).orElse(null);
 		this.epicName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Epics")).orElse(null);
 		this.versionName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée")).orElse(null);
+
 		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée") != -1) {
 			this.versionCorrected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée")).orElse(null);
 		}
@@ -85,6 +87,10 @@ public abstract class GenericModel {
 		this.priority = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Priorité")).orElse(null);
 		this.composantName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Composant")).orElse(null);
 		this.estimation = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Estimation Originale")).orElse(null);
+
+		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Lien") != -1) {
+			this.linkTargetName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Lien")).orElse(null);
+		}
 
 		if ("Story".equals(this.typeDemande) && this.clientReference != null) {
 			StringBuilder stringBuilder = new StringBuilder();

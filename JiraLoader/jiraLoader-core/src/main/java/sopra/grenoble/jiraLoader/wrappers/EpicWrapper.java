@@ -1,12 +1,10 @@
 package sopra.grenoble.jiraLoader.wrappers;
 
+import com.atlassian.jira.rest.client.domain.BasicIssue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-
 import sopra.grenoble.jiraLoader.excel.dto.Epic;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueEpicService;
@@ -33,7 +31,7 @@ public class EpicWrapper extends AbstractWrapper<Epic> {
 	@Override
 	public void insertInJira(Epic e) throws JiraGeneralException {
 		//test if exists
-		BasicIssue epicIssue = epicSrv.getByName(e.resume, jiraUserDatas.getProjectName());
+		BasicIssue epicIssue = epicSrv.getByName(e.resume, jiraUserDatas.getProjectName()).orElse(null);
 		if (epicIssue == null) {
 			epicIssue = epicSrv.createEpic(jiraUserDatas.getProjectName(), e.resume, e.composantName);
 			LOG.info(getLogPrefixe() + "Creating new Epic in JIRA with name : " + e.resume + " with KEY <" + epicIssue.getKey() + ">");

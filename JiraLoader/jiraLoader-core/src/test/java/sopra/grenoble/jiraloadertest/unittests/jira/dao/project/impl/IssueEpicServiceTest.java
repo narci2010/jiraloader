@@ -1,12 +1,7 @@
 package sopra.grenoble.jiraloadertest.unittests.jira.dao.project.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URISyntaxException;
-
+import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.Issue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,10 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.atlassian.jira.rest.client.domain.BasicIssue;
-import com.atlassian.jira.rest.client.domain.Issue;
-
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
@@ -25,6 +16,10 @@ import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraFieldLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueEpicService;
 import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
+
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(ApplicationConfiguration.class)
@@ -94,7 +89,7 @@ public class IssueEpicServiceTest {
 		assertNotNull(bi);
 		
 		try {
-			BasicIssue biGet = epicSrv.getByName("EPIC TEST DEV", projectTestName);
+			BasicIssue biGet = epicSrv.getByName("EPIC TEST DEV", projectTestName).orElse(null);
 			assertNotNull(biGet);
 			assertEquals(biGet.getId(), bi.getId());
 		} finally {
@@ -116,7 +111,7 @@ public class IssueEpicServiceTest {
 		assertNotNull(bi5);
 		
 		try {
-			BasicIssue biGet = epicSrv.getByName("EPIC TEST DEV", projectTestName);
+			BasicIssue biGet = epicSrv.getByName("EPIC TEST DEV", projectTestName).orElse(null);
 			assertNotNull(biGet);
 			assertEquals(biGet.getId(), bi.getId());
 		} finally {

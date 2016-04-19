@@ -30,7 +30,7 @@ public class SubTasksWrapper extends AbstractWrapper<SubTasks> {
 
 	@Override
 	public void insertInJira(SubTasks s) throws JiraGeneralException {
-		BasicIssue bi = subTSrv.createSubTask(jiraUserDatas.getProjectName(), jiraUserDatas.getLastStoryKey(), s.typeDemande, s.resume, s.descriptif, s.priority, s.estimation, s.composantName);
+		BasicIssue bi = subTSrv.createSubTask(jiraUserDatas.getProjectName(), jiraUserDatas.getLastStoryKey(), s.typeDemande, s.resume, s.descriptif, s.priority, s.estimation, s.composantName, s.linkTargetName);
 		LOG.info(getLogPrefixe() + "Subtask has been created with KEY : " + bi.getKey());
 
 		//update the DTO key

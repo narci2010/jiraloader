@@ -1,5 +1,15 @@
 package sopra.grenoble.jiraLoader;
 
+import com.atlassian.jira.rest.client.NullProgressMonitor;
+import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.SearchResult;
+import com.atlassian.jira.rest.client.domain.Worklog;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -12,6 +22,7 @@ import sopra.grenoble.jiraLoader.excel.dto.GenericModel;
 import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.UnexpectedTypeLineException;
+import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.MetadataGeneralLoader;
 import sopra.grenoble.jiraLoader.wrappers.AbstractWrapper;
@@ -19,7 +30,13 @@ import sopra.grenoble.jiraLoader.wrappers.WrapperFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,6 +55,9 @@ public class JiraLoader {
 
 	@Autowired
 	private ExcelDatas excelFileDatasBean;
+
+	@Autowired
+	private IJiraRestClientV2 jiraConnection;
 	
 	/**
 	 * The wrapper factory
@@ -50,6 +70,218 @@ public class JiraLoader {
 	private void loadMetadata() {
 		// load all metadata
 		metadataLoader.initLoaderSynchronously();
+	}
+
+	/**
+	 * Main function to export data from jira worklog to an excel file.
+	 * @throws IOException
+	 */
+	public void exportDataFromWorkLog() throws IOException, URISyntaxException {
+
+		LOG.info("###################################################");
+		LOG.info("STEP 1 - Loading metadatas");
+		loadMetadata();
+
+		LOG.info("###################################################");
+		LOG.info("STEP 3 - Loading data");
+		List<Issue> issueList = loadWorkLogData();
+
+
+		if (issueList.isEmpty()) {
+			LOG.warn("Issue list is empty, please check Jira");
+		}
+
+		LOG.info("###################################################");
+		LOG.info("STEP 4 - Writing data");
+		writeDataTwo(issueList);
+
+		LOG.info("###################################################");
+		LOG.info("Well done, extraction successful");
+	}
+
+	public List<Issue> loadWorkLogData() throws IOException, URISyntaxException {
+		//Set params
+		LOG.info("Opening connection");
+		jiraConnection.openConnection();
+		String projectName = jiraUserDatasBean.getProjectName();
+		NullProgressMonitor pm = new NullProgressMonitor();
+		//Load data
+		List<Issue> issueList = new ArrayList<>();
+		String jqlSearch = "project=\"" + projectName + "\"";
+		LOG.info("Search : " + jqlSearch);
+		SearchResult searchResult = jiraConnection.getSearchClient().searchJql(jqlSearch, pm);
+
+		//Set date for export
+		Date today = Date.from(ZonedDateTime.now().toInstant());
+		long dayInMs = 1000 * 60 * 60 * 24 * 2;
+		Date twoDaysAgo = new Date(today.getTime() - dayInMs);
+
+
+		for (BasicIssue basicIssue : searchResult.getIssues()) {
+			Issue issue = jiraConnection.getIssueClient().getIssue(basicIssue.getKey(), pm);
+			Iterable<Worklog> worklogList = issue.getWorklogs();
+			worklogList.forEach(worklog -> {
+				if (worklog.getUpdateDate().isAfter(twoDaysAgo.getTime())) {
+					if (!issueList.contains(issue)) {
+						LOG.info(issue.getKey() + " : " + issue.getSummary() + " added in list");
+						issueList.add(issue);
+					}
+				}
+			});
+		}
+		return issueList;
+	}
+
+	public void writeDataTwo(List<Issue> issueList) throws IOException {
+		// Create excel file
+		LOG.info("Creating excel file ....");
+		FileOutputStream fileOut = new FileOutputStream("export-worklog-jira.xls");
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		HSSFSheet sheet = workbook.createSheet("Export work log Jira");
+		HSSFRow row = sheet.createRow((short) 0);
+		LOG.info("Excel file created");
+
+		// Set style for cells
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setWrapText(true);
+		row.setRowStyle(style);
+
+		HSSFCellStyle tabStyle = workbook.createCellStyle();
+		tabStyle.setWrapText(true);
+		tabStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setBottomBorderColor(HSSFColor.BLACK.index);
+		tabStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setLeftBorderColor(HSSFColor.BLACK.index);
+		tabStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setRightBorderColor(HSSFColor.BLACK.index);
+		tabStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setTopBorderColor(HSSFColor.BLACK.index);
+
+		HSSFCellStyle tabStyle2 = workbook.createCellStyle();
+		tabStyle2.setWrapText(true);
+		tabStyle2.setWrapText(true);
+		tabStyle2.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle2.setBottomBorderColor(HSSFColor.BLACK.index);
+		tabStyle2.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle2.setLeftBorderColor(HSSFColor.BLACK.index);
+		tabStyle2.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle2.setRightBorderColor(HSSFColor.BLACK.index);
+		tabStyle2.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle2.setTopBorderColor(HSSFColor.BLACK.index);
+		tabStyle2.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+		tabStyle2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+		HSSFCellStyle headerStyle = workbook.createCellStyle();
+		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setBottomBorderColor(HSSFColor.BLACK.index);
+		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setLeftBorderColor(HSSFColor.BLACK.index);
+		headerStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setRightBorderColor(HSSFColor.BLACK.index);
+		headerStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setTopBorderColor(HSSFColor.BLACK.index);
+		headerStyle.setFillForegroundColor(HSSFColor.ROYAL_BLUE.index);
+		headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+
+		// Create header
+		LOG.info("Header creation");
+		row.createCell(0).setCellValue("Issue");
+		row.getCell(0).setCellStyle(headerStyle);
+		row.createCell(1).setCellValue("Summary");
+		row.getCell(1).setCellStyle(headerStyle);
+		row.createCell(2).setCellValue("Author");
+		row.getCell(2).setCellStyle(headerStyle);
+		row.createCell(3).setCellValue("Comment");
+		row.getCell(3).setCellStyle(headerStyle);
+		row.createCell(4).setCellValue("Time spent");
+		row.getCell(4).setCellStyle(headerStyle);
+		row.createCell(5).setCellValue("RAE");
+		row.getCell(5).setCellStyle(headerStyle);
+		row.createCell(6).setCellValue("Update date");
+		row.getCell(6).setCellStyle(headerStyle);
+
+
+		// Create others rows
+		if (issueList != null) {
+			for (int i = 0; i < issueList.size(); i++) {
+				Issue issue = issueList.get(i);
+				List<Worklog> worklogList = (List<Worklog>) issue.getWorklogs();
+				for (int j = 1 + i; j <= worklogList.size() + i; j++) {
+					row = sheet.createRow(j);
+					row.createCell(0).setCellValue(issue.getKey());
+					row.getCell(0).setCellStyle(tabStyle);
+
+					row.createCell(1).setCellValue(issue.getSummary());
+					row.getCell(1).setCellStyle(tabStyle);
+
+					row.createCell(2).setCellValue(worklogList.get(j - 1 - i).getUpdateAuthor().getDisplayName());
+					row.getCell(2).setCellStyle(tabStyle);
+					row.createCell(3).setCellValue(worklogList.get(j - 1 - i).getComment());
+					row.getCell(3).setCellStyle(tabStyle);
+					if (worklogList.get(j - 1 - i).getMinutesSpent() != null) {
+						if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 == 0) {
+							row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h");
+							row.getCell(4).setCellStyle(tabStyle);
+						} else if (worklogList.get(j - 1 - i).getMinutesSpent() <= 59) {
+							row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() + "m");
+							row.getCell(4).setCellStyle(tabStyle);
+						} else if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 != 0 && worklogList.get(j - 1 - i).getMinutesSpent() > 60) {
+							row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h" + worklogList.get(j - 1 - i).getMinutesSpent() % 60 + "m");
+							row.getCell(4).setCellStyle(tabStyle);
+						}
+					} else {
+						row.createCell(4).setCellValue("No time spent set");
+						row.getCell(4).setCellStyle(tabStyle);
+					}
+
+					if (issue.getTimeTracking().getRemainingEstimateMinutes() != null) {
+						if (issue.getTimeTracking().getRemainingEstimateMinutes() % 60 == 0) {
+							row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h");
+							row.getCell(5).setCellStyle(tabStyle);
+						} else if (issue.getTimeTracking().getRemainingEstimateMinutes() <= 59) {
+							row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() + "m");
+							row.getCell(5).setCellStyle(tabStyle);
+						} else if (issue.getTimeTracking().getRemainingEstimateMinutes() > 60 && issue.getTimeTracking().getRemainingEstimateMinutes() % 60 != 0) {
+							row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h" + issue.getTimeTracking().getRemainingEstimateMinutes() % 60 + "m");
+							row.getCell(5).setCellStyle(tabStyle);
+						}
+
+					} else {
+						row.createCell(5).setCellValue("No RAE set");
+						row.getCell(5).setCellStyle(tabStyle);
+					}
+					row.createCell(6).setCellValue(worklogList.get(j - 1 - i).getUpdateDate().toString().substring(0, 10));
+					row.getCell(6).setCellStyle(tabStyle);
+				}
+			}
+		} else {
+			LOG.warn("Careful, empty issue list");
+		}
+
+		// Autosize Columns
+		for (int i = 0; i <= 6; i++) {
+			sheet.autoSizeColumn(i);
+		}
+		for (int i = 1; i < sheet.getLastRowNum(); i++) {
+			for (int j = 0; j < 7; j++) {
+				if (i % 2 == 1) {
+					row = sheet.getRow(i);
+					row.getCell(j).setCellStyle(tabStyle2);
+				}
+			}
+		}
+
+		// Save & close file
+		try {
+			LOG.info("Save data in file : ...");
+			workbook.write(fileOut);
+			fileOut.flush();
+			fileOut.close();
+			LOG.info("Save data in file : OK");
+		} catch (IOException e) {
+			LOG.warn(e.getStackTrace().toString());
+			LOG.warn("Error during data saving");
+		}
 	}
 
 	/**
@@ -269,4 +501,6 @@ public class JiraLoader {
 		}
 		return allLineOK;
 	}
+
+
 }
