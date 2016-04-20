@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public class StoryServiceMock implements IIssueService {
 
+
 	@Override
 	public Issue getByKey(String key, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
 
@@ -31,13 +32,13 @@ public class StoryServiceMock implements IIssueService {
 
 	@Override
 	public BasicIssue createSubTask(String projectName, String parentKey, String issueTypeName, String resume,
-			String description, String priority, String estimation, String componentName) throws JiraGeneralException {
+									String description, String priority, String estimation, String componentName, String linkTargetName) throws JiraGeneralException {
 		return null;
 	}
 
 	@Override
 	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume,
-								  String description, String priority, String componentName, String versionCorrected, String versionAffected) throws JiraGeneralException {
+								  String description, String priority, String componentName, String versionCorrected, String linkTargetName) throws JiraGeneralException {
 		BasicIssue bi = null;
 		try {
 			bi = new BasicIssue(new URI("uri"), "1", 1L);
@@ -49,6 +50,16 @@ public class StoryServiceMock implements IIssueService {
 
 	@Override
 	public Optional<BasicIssue> getByStartingName(String storyName, String projectName) {
+		try {
+			return Optional.of(new BasicIssue(new URI("uri"), "1", 1L));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<BasicIssue> getSubTaskByStartingName(String storyName, String projectName) {
 		try {
 			return Optional.of(new BasicIssue(new URI("uri"), "1", 1L));
 		} catch (URISyntaxException e) {

@@ -1,18 +1,17 @@
 package sopra.grenoble.jiraLoaderCmdLine;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-
 import sopra.grenoble.jiraLoader.JiraLoader;
 import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.spring.ApplicationContextProvider;
 import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
+
+import java.io.IOException;
 
 @SpringBootApplication(scanBasePackageClasses={JiraLoader.class, ApplicationConfiguration.class}) // same as @Configuration @EnableAutoConfiguration @ComponentScan
 public class Main {
@@ -54,6 +53,7 @@ public class Main {
 		LOG.info("Jira configuration : projectName=" + juc.getProjectName());
 		LOG.info("Jira configuration : uri=" + juc.getUri());
 		LOG.info("Jira excel file path : path=" + juc.getExcelJiraFilePath());
+		LOG.info("Export (true/false) : " + juc.getExport());
 		
 		
 		//test username and password
@@ -73,13 +73,14 @@ public class Main {
 			LOG.error("You have to specify the jira uri");
 			System.exit(1);
 		}
-		
-		//test jiraExcel file
-		if (juc.getExcelJiraFilePath() == null) {
-			LOG.error("You have to specify the excel jira file path");
-			System.exit(1);
+
+		if (!juc.getExport()) {
+			//test jiraExcel file
+			if (juc.getExcelJiraFilePath() == null) {
+				LOG.error("You have to specify the excel jira file path");
+				System.exit(1);
+			}
 		}
-		
 		
 		//opening connection
 		IJiraRestClientV2 jiraConnection = ApplicationContextProvider.getApplicationContext().getBean(IJiraRestClientV2.class);
@@ -89,13 +90,18 @@ public class Main {
 		JiraLoader jiraLoader = ApplicationContextProvider.getApplicationContext().getBean(JiraLoader.class);
 
 		//run application
-		try {
-			jiraLoader.loadingFile(juc.getExcelJiraFilePath());
-		} catch (IOException e) {
-			LOG.error("Error while loading excel file in JIRA", e);
-			System.exit(1);
+		if (!juc.getExport()) {
+			try {
+				jiraLoader.loadingFile(juc.getExcelJiraFilePath());
+			} catch (IOException e) {
+				LOG.error("Error while loading excel file in JIRA", e);
+				System.exit(1);
+			}
+			LOG.info("Excel file has been successfully loaded");
+		} else {
+			jiraLoader.exportDataFromWorkLog();
 		}
-		LOG.info("Excel file has been successfully loaded");
+
 	}
 	
 }

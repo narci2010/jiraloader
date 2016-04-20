@@ -1,9 +1,11 @@
 package sopra.grenoble.jiraLoader.jira.dao.project.impl;
 
+import com.atlassian.jira.rest.client.NullProgressMonitor;
 import com.atlassian.jira.rest.client.domain.*;
 import com.atlassian.jira.rest.client.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.domain.input.LinkIssuesInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,7 @@ import sopra.grenoble.jiraLoader.jira.dao.project.IIssueEpicService;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
 import sopra.grenoble.jiraLoader.jira.dao.project.IVersionService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IssueStoryAndSubTaskService extends IssueAbstractGenericService implements IIssueService {
@@ -30,14 +29,14 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	@Autowired private JiraFieldLoader fieldLoader;
 
 	@Override
-	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume, String description, String priority, String componentName, String versionCorrected, String versionAffected) throws JiraGeneralException {
+	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume, String description, String priority, String componentName, String versionCorrected, String linkTargetName) throws JiraGeneralException {
 		//call generic builder
 		IssueInputBuilder iib = createGenericIssue(projectName,  JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME, resume, description, priority, componentName);
 		
 		//add epicLink
 		if (epicName != null) {
 			//get epic based on the name
-			BasicIssue epicI = epicSrv.getByName(epicName, projectName);
+			BasicIssue epicI = epicSrv.getByName(epicName, projectName).orElse(null);
 			if (epicI == null) {
 				throw new JiraEpicNotFound();
 			}
@@ -56,19 +55,37 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		if (versionCorrected != null) {
 			addFixVersion(iib, projectName, versionCorrected);
 		}
-
-		// add affected version
-		if (versionAffected != null) {
-			addAffectedVersion(iib, projectName, versionAffected);
-		}
 				
 		//insert in JIRA
 		BasicIssue bi = super.createIssueInJIRA(iib.build());
+
+		if (linkTargetName != null) {
+			// Check if it is a story or a subtask with | char
+			if (linkTargetName.contains("|")) {
+				Optional<BasicIssue> basicIssue = getByStartingName(linkTargetName, projectName);
+				if (basicIssue.equals(Optional.empty())) {
+					LOG.warn("Story not found, please check logs");
+				} else {
+					LinkIssuesInput linkIssuesInput = new LinkIssuesInput(bi.getKey(), basicIssue.get().getKey(), "(français) Concerner");
+					jiraConnection.getIssueClient().linkIssue(linkIssuesInput, new NullProgressMonitor());
+					LOG.info("New link created between " + bi.getKey() + " and " + basicIssue.get().getKey());
+				}
+			} else {
+				Optional<BasicIssue> basicIssue = getSubTaskByStartingName(linkTargetName, projectName);
+				if (basicIssue.equals(Optional.empty())) {
+					LOG.warn("SubTask not found, please check logs");
+				} else {
+					LinkIssuesInput linkIssuesInput = new LinkIssuesInput(bi.getKey(), basicIssue.get().getKey(), "(français) Concerner");
+					jiraConnection.getIssueClient().linkIssue(linkIssuesInput, pm);
+					LOG.info("New link created between " + bi.getKey() + " and " + basicIssue.get().getKey());
+				}
+			}
+		}
 		return bi;
 	}
 
 	@Override
-	public BasicIssue createSubTask(String projectName, String parentKey, String issueTypeName, String resume, String description, String priority, String estimation, String componentName) throws JiraGeneralException {
+	public BasicIssue createSubTask(String projectName, String parentKey, String issueTypeName, String resume, String description, String priority, String estimation, String componentName, String linkTargetName) throws JiraGeneralException {
 		//get the parentIssue
 		Issue parentIssue = getByKey(parentKey, projectName);
 		
@@ -100,7 +117,27 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		
 		//insert in JIRA
 		BasicIssue bi = super.createIssueInJIRA(iib.build());
-
+		if (linkTargetName != null) {
+			if (linkTargetName.contains("|")) {
+				Optional<BasicIssue> basicIssue = getByStartingName(linkTargetName, projectName);
+				if (basicIssue.equals(Optional.empty())) {
+					LOG.warn("Story not found, please check logs");
+				} else {
+					LinkIssuesInput linkIssuesInput = new LinkIssuesInput(bi.getKey(), basicIssue.get().getKey(), "(français) Concerner");
+					jiraConnection.getIssueClient().linkIssue(linkIssuesInput, pm);
+					LOG.info("New link created between " + bi.getKey() + " and " + basicIssue.get().getKey());
+				}
+			} else {
+				Optional<BasicIssue> basicIssue = getSubTaskByStartingName(linkTargetName, projectName);
+				if (basicIssue.equals(Optional.empty())) {
+					LOG.warn("SubTask not found, please check logs");
+				} else {
+					LinkIssuesInput linkIssuesInput = new LinkIssuesInput(bi.getKey(), basicIssue.get().getKey(), "(français) Concerner");
+					jiraConnection.getIssueClient().linkIssue(linkIssuesInput, pm);
+					LOG.info("New link created between " + bi.getKey() + " and " + basicIssue.get().getKey());
+				}
+			}
+		}
 		return bi;
 	}
 	
@@ -108,7 +145,6 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	/**
 	 * Add a reference to an epic in issue.
 	 * @param iib
-	 * @param epicName
 	 * @throws JiraGeneralException 
 	 * @throws IssueNotFoundException 
 	 */
@@ -171,27 +207,65 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 	/**
 	 * Search on JIRA if a issue's name is starting by the name passed in parameter
 	 * @param issueName
-	 * @param epicName
 	 * @param projectName
 	 * @return
 	 */
-	public Optional<BasicIssue> getByStartingName(String issueName, String projectName) {
-		String jpqlFormat = String.format("issuetype = " + JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME + " AND summary ~ '%s'", issueName);
+	public Optional<BasicIssue> getByStartingName(String issueName, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
+		String jpqlFormat = String.format("issuetype = " + JiraIssuesTypeLoader.JIRA_STORY_ISSUE_TYPE_NAME + " AND summary ~ \"%s\"", issueName);
 		SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
-		for (BasicIssue epicIssue : sr.getIssues()) {
+		List<Issue> issueList = new ArrayList<>();
+		for (BasicIssue basicIssue : sr.getIssues()) {
 			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
-			try {
-				Issue is = getByKey(epicIssue.getKey(), projectName);
-				LOG.debug("Found possible match issue with name " + is.getSummary()); 
-				if (is.getSummary().startsWith(issueName)) {
-					return Optional.of(is);
-				}
-			} catch (IssueNotFoundException | JiraIssueTypeException e) {
+			Issue issue = getByKey(basicIssue.getKey(), projectName);
+			if (issueName.equals(issue.getSummary())) {
+				issueList.add(issue);
 			}
 		}
-		return Optional.empty();
+		if (issueList.size() != 1) {
+			if (issueList.size() == 0) {
+				LOG.warn("No issue has been found with this summary : " + issueName + " , please check Jira & Excel file if you expected one");
+				return Optional.empty();
+			} else {
+				LOG.warn("Be careful, there are more than one subtask with the same summary ");
+				return Optional.empty();
+			}
+		} else {
+			LOG.info("One issue has been found with the correct summary, KEY : " + issueList.get(0).getKey());
+			return Optional.of(issueList.get(0));
+		}
 	}
 
+	/**
+	 * @param issueName
+	 * @param projectName
+	 * @return empty if there are more than one subtask with this summary or return the issue.
+	 * @throws IssueNotFoundException
+	 * @throws JiraIssueTypeException
+	 */
+	public Optional<BasicIssue> getSubTaskByStartingName(String issueName, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
+		String jpqlFormat = String.format("issuetype = " + JiraIssuesTypeLoader.JIRA_SUBTASK_ISSUE_TYPE_NAME + " AND summary ~ \"%s\"", issueName);
+		SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
+		List<Issue> issueList = new ArrayList<>();
+		for (BasicIssue basicIssue : sr.getIssues()) {
+			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
+			Issue issue = getByKey(basicIssue.getKey(), projectName);
+			if (issueName.equals(issue.getSummary())) {
+				issueList.add(issue);
+			}
+		}
+		if (issueList.size() != 1) {
+			if (issueList.size() == 0) {
+				LOG.warn("No subtask has been found with this summary, please check Jira & Excel file");
+				return Optional.empty();
+			} else {
+				LOG.warn("Be careful, there are more than one subtask with the same summary ");
+				return Optional.empty();
+			}
+		} else {
+			LOG.info("One issue has been found with the correct summary, KEY : " + issueList.get(0).getKey());
+			return Optional.of(issueList.get(0));
+		}
+	}
 	
 	@Override
 	public void updateIssue(String issueKey, String projectName, String priority) throws IssueNotFoundException, JiraGeneralException {
@@ -216,6 +290,24 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 			this.updateIssueInJira(issue, lstFields);
 		} else if (new Long(10007).equals(issue.getStatus().getId())) {
 			LOG.info("Story was completed, nothing was updated");
+		}
+		// If issue type = Story && allowing recursive update of sub-task via story = true
+		if (excelConfigurationDatas.isUpdateSubTasksOutOfFile() && "Story".equals(issue.getIssueType().getName())) {
+			// Get list of sub-tasks for this story
+			if (issue.getSubtasks() != null) {
+				for (Iterator<Subtask> subtaskIterator = issue.getSubtasks().iterator(); subtaskIterator.hasNext(); ) {
+					Subtask subTask = subtaskIterator.next();
+					try {
+						Issue subTaskIssue = getByKey(subTask.getIssueKey(), projectName);
+						updateIssue(subTaskIssue.getKey(), projectName, priority);
+					} catch (IssueNotFoundException e) {
+						LOG.info(e.getStackTrace().toString());
+					}
+
+				}
+			}
+
+
 		}
 	}
 	

@@ -28,7 +28,7 @@ public abstract class GenericModel {
 	public String composantName;
 	public String estimation;
 	public String versionCorrected;
-	public String versionAffected;
+	public String linkTargetName;
 
 	/**
 	 * @param key
@@ -43,7 +43,7 @@ public abstract class GenericModel {
 	 * @param estimation
 	 */
 	public GenericModel(String key, String typeDemande, String epicName, String versionName, String clientReference, String resume,
-						String descriptif, String priority, String composantName, String estimation, String versionCorrected, String versionAffected) {
+						String descriptif, String priority, String composantName, String estimation, String versionCorrected, String linkTargetName) {
 		super();
 		this.key = key;
 		this.typeDemande = typeDemande;
@@ -56,7 +56,6 @@ public abstract class GenericModel {
 		this.composantName = composantName;
 		this.estimation = estimation;
 		this.versionCorrected = versionCorrected;
-		this.versionAffected = versionAffected;
 	}
 	
 	/**
@@ -74,10 +73,8 @@ public abstract class GenericModel {
 		this.key = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "ID")).orElse(null);
 		this.typeDemande = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Type de demande")).orElse(null);
 		this.epicName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Epics")).orElse(null);
-		this.versionName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version")).orElse(null);
-		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée") != -1) {
-			this.versionAffected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée")).orElse(null);
-		}
+		this.versionName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version affectée")).orElse(null);
+
 		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée") != -1) {
 			this.versionCorrected = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Version corrigée")).orElse(null);
 		}
@@ -91,6 +88,15 @@ public abstract class GenericModel {
 		this.composantName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Composant")).orElse(null);
 		this.estimation = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Estimation Originale")).orElse(null);
 
+		if (XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Lien") != -1) {
+			this.linkTargetName = ExcelRowUtils.getStringValueFromRow(row, XslsFileReaderAndWriter.findColumnNumber(excelLoader, "Lien")).orElse(null);
+		}
+
+		if ("Story".equals(this.typeDemande) && this.clientReference != null) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(this.clientReference + " | " + this.resume);
+			this.resume = stringBuilder.toString();
+		}
 	}
 	
 	@Override

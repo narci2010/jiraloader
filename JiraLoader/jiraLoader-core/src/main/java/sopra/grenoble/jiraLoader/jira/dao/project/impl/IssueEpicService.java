@@ -1,23 +1,25 @@
 package sopra.grenoble.jiraLoader.jira.dao.project.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.Field;
 import com.atlassian.jira.rest.client.domain.Issue;
 import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.domain.input.IssueInputBuilder;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraFieldLoader;
 import sopra.grenoble.jiraLoader.jira.dao.metadatas.JiraIssuesTypeLoader;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueEpicService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class IssueEpicService extends IssueAbstractGenericService implements IIssueEpicService {
@@ -36,23 +38,30 @@ public class IssueEpicService extends IssueAbstractGenericService implements IIs
 		}
 		return epicIssue;
 	}
-	
+
 	@Override
-	public BasicIssue getByName(String epicName, String projectName) {
-		String jpqlFormat = String.format("issuetype = " + JiraIssuesTypeLoader.JIRA_EPIC_ISSUE_TYPE_NAME + " AND summary ~ '%s'", epicName);
-		SearchResult sr = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
-		for (BasicIssue epicIssue : sr.getIssues()) {
-			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
-			try {
-				Issue is = getByKey(epicIssue.getKey(), projectName);
-				if (is.getSummary().compareTo(epicName) == 0) {
-					return is;
-				}
-			} catch (IssueNotFoundException | JiraIssueTypeException e) {
-				LOG.warn("Unable to find the Epic with KEY : " + epicIssue.getKey());
+	public Optional<BasicIssue> getByName(String epicName, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
+		String jpqlFormat = String.format("project= \"" + projectName + "\" and issuetype=epic and cf[15895]= \"" + epicName + "\"");
+		SearchResult searchResult = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
+		List<Issue> issueList = new ArrayList<>();
+		for (BasicIssue basicIssue : searchResult.getIssues()) {
+			Issue issue = getByKey(basicIssue.getKey(), projectName);
+			if (epicName.equals(issue.getField("customfield_15895").getValue())) {
+				issueList.add(issue);
 			}
 		}
-		return null;
+		if (issueList.size() != 1) {
+			if (issueList.size() == 0) {
+				LOG.warn("No issue has been found with this epic name : " + epicName);
+				return Optional.empty();
+			} else {
+				LOG.warn("Be careful, there are more than one epic with the same Epic Name");
+				return Optional.empty();
+			}
+		} else {
+			LOG.info("One epic has been found with the correct Epic Name, KEY : " + issueList.iterator().next().getFieldByName("Epic Name"));
+			return Optional.of(issueList.get(0));
+		}
 	}
 
 	@Override

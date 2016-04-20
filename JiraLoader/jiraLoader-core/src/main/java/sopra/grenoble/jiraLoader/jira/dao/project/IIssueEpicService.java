@@ -1,10 +1,11 @@
 package sopra.grenoble.jiraLoader.jira.dao.project;
 
 import com.atlassian.jira.rest.client.domain.BasicIssue;
-
 import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
 import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
+
+import java.util.Optional;
 
 public interface IIssueEpicService extends IIssueGenericService {
 
@@ -25,5 +26,5 @@ public interface IIssueEpicService extends IIssueGenericService {
 	 * @throws JiraIssueTypeException 
 	 * @throws IssueNotFoundException 
 	 */
-	public BasicIssue getByName(String epicName, String projectName) throws IssueNotFoundException, JiraIssueTypeException;
+	public Optional<BasicIssue> getByName(String epicName, String projectName) throws IssueNotFoundException, JiraIssueTypeException;
 }

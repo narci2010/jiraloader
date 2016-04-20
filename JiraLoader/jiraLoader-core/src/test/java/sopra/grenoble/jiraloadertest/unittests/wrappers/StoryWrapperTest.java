@@ -64,12 +64,16 @@ public class StoryWrapperTest {
 	
 	@Value("${test.OPAL_ODYSEE.version.name}")
 	private String versionName;
-	
+
+	@Value("${export:true}")
+	private boolean export;
+
+
 	@Test
 	public void insertInJira_newLine_Test() throws Exception {
 //		WrapperFactory wrapperFact = new WrapperFactory();
 //		wrapper = (StoryWrapper) wrapperFact.getWrapper("Story");
-		
+
 		Story s = new Story();
 		s.epicName = "TOTO";
 		s.versionName = versionName;

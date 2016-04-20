@@ -1,11 +1,15 @@
 package sopra.grenoble.jiraloadertest.unittests.excel.loader;
 
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.junit.Test;
 import sopra.grenoble.jiraLoader.excel.loaders.XslsFileReaderAndWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -81,5 +85,22 @@ public class XslsFileReaderAndWriterTest {
 		assertEquals(xlsrw.findColumnNumber(xlsrw, "Hello"), 1);
 		assertNotEquals(xlsrw.findColumnNumber(xlsrw, "Hello"), 2);
 
+	}
+
+	@Test
+	public void createExcelFile() throws IOException {
+		FileOutputStream fileOut = new FileOutputStream("export-worklog-jira.xls");
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		HSSFSheet sheet = workbook.createSheet("Export work log Jira");
+		HSSFRow row = sheet.createRow((short) 0);
+		row.createCell(0).setCellValue("Issue");
+		row.createCell(1).setCellValue("WorkLog");
+		row.createCell(2).setCellValue("Author");
+		row.createCell(3).setCellValue("Comment");
+		row.createCell(4).setCellValue("Time spent");
+		row.createCell(5).setCellValue("RAE");
+		workbook.write(fileOut);
+		fileOut.flush();
+		fileOut.close();
 	}
 }

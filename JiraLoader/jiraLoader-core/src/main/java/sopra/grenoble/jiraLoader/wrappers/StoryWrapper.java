@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sopra.grenoble.jiraLoader.excel.dto.Story;
+import sopra.grenoble.jiraLoader.exceptions.IssueNotFoundException;
 import sopra.grenoble.jiraLoader.exceptions.JiraGeneralException;
+import sopra.grenoble.jiraLoader.exceptions.JiraIssueTypeException;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
 
 import java.util.Optional;
@@ -34,8 +36,10 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 		Optional<BasicIssue> bi = Optional.empty();
 		//if option checkStoryExist is activated, check if the story is existing in JIRA
 		if (excelConfigurationDatas.isSearchStoryByNameBeforeCreate()) {
-			LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.resume);
+
 			bi = getStoryIfExist(s.resume, jiraUserDatas.getProjectName());
+			LOG.info(getLogPrefixe() + "isSearchStoryByNameBeforeCreate is activated. Looking for issue with name : " + s.resume);
+
 		}
 		
 		if (bi.isPresent()) {
@@ -43,7 +47,7 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 			s.key = String.valueOf(bi.get().getKey());
 			updateRowInJira();
 		} else {
-			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.clientReference, s.resume, s.descriptif, s.priority, s.composantName, s.versionCorrected, s.versionAffected));
+			bi = Optional.of(storySrv.createStory(jiraUserDatas.getProjectName(), s.epicName, s.versionName, s.clientReference, s.resume, s.descriptif, s.priority, s.composantName, s.versionCorrected, s.linkTargetName));
 			LOG.info(getLogPrefixe() + "Story has been created with KEY : " + bi.get().getKey());
 		}
 
@@ -62,9 +66,8 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 	}
 
 
-	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) {
+	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) throws JiraIssueTypeException, IssueNotFoundException {
 		String storyName = fullStoryName.split("\\|")[0].trim();
 		return storySrv.getByStartingName(storyName, projectName);
 	}
-	
 }

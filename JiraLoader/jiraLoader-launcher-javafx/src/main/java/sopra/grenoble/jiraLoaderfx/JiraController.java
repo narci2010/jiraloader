@@ -1,15 +1,6 @@
 package sopra.grenoble.jiraLoaderfx;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.rest.client.domain.BasicProject;
-
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -17,11 +8,18 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sopra.grenoble.jiraLoader.JiraLoader;
 import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.connection.IJiraRestClientV2;
 import sopra.grenoble.jiraLoader.jira.dao.project.IProjectService;
 import sopra.grenoble.jiraLoader.spring.ApplicationContextProvider;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 
 public class JiraController {
 
@@ -42,6 +40,8 @@ public class JiraController {
 	private Button btSelect;
 	@FXML
 	private Button btConnect;
+	@FXML
+	private Button btExport;
 
 	@FXML
 	private ChoiceBox<String> cbProjectChooser;
@@ -113,6 +113,30 @@ public class JiraController {
 	}
 
 	@FXML
+	private void exportWorkLogs() throws URISyntaxException, IOException {
+		LOG.info("Starting Export");
+
+		//update bean with project name
+		LOG.info("Change project name to : " + cbProjectChooser.getSelectionModel().getSelectedItem());
+		jiraUserConfiguration.setProjectName(cbProjectChooser.getSelectionModel().getSelectedItem());
+
+		//run application
+
+		Runnable task = () -> {
+			try {
+				jiraLoader.exportDataFromWorkLog();
+			} catch (IOException | URISyntaxException e) {
+				LOG.error("Error while exporting data to excel file", e);
+			}
+		};
+
+		//start the thread
+		Thread thread = new Thread(task);
+		thread.setPriority(Thread.MIN_PRIORITY);
+		thread.start();
+	}
+
+	@FXML
 	private void openSelectionFile() {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Please select your excel file");
@@ -159,7 +183,9 @@ public class JiraController {
 				activateBtAfterConnection();
 				ObservableList<String> items = cbProjectChooser.getItems();
 				for (BasicProject project : projects) {
-					items.add(project.getName());
+					if (!items.contains(project.getName())) {
+						items.add(project.getName());
+					}
 				}
 				cbProjectChooser.getSelectionModel().selectFirst();
 			} else {
@@ -178,6 +204,7 @@ public class JiraController {
 		this.btSelect.setDisable(false);
 		this.btConnect.setDefaultButton(false);
 		this.btInject.setDefaultButton(true);
+		this.btExport.setDisable(false);
 
 	}
 
@@ -186,6 +213,7 @@ public class JiraController {
 		this.cbProjectChooser.setDisable(true);
 		this.cbProjectChooser.getItems().clear();
 		this.btSelect.setDisable(true);
+		this.btExport.setDisable(true);
 	}
 
 	/**
@@ -272,5 +300,14 @@ public class JiraController {
 	public void setTextArea(TextArea textArea) {
 		this.textArea = textArea;
 	}
+
+	public Button getBtExport() {
+		return btExport;
+	}
+
+	public void setBtExport(Button btExport) {
+		this.btExport = btExport;
+	}
+
 
 }

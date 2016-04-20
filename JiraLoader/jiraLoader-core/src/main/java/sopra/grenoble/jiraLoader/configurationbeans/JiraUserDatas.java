@@ -36,6 +36,9 @@ public class JiraUserDatas {
 	 */
 	@Value("${excelFilePath}")
 	private String excelJiraFilePath;
+
+	@Value("${export}")
+	private boolean export;
 	
 	
 	/**
@@ -92,5 +95,13 @@ public class JiraUserDatas {
 
 	public void setExcelJiraFilePath(String excelJiraFilePath) {
 		this.excelJiraFilePath = excelJiraFilePath;
+	}
+
+	public boolean getExport() {
+		return export;
+	}
+
+	public void setExport(boolean export) {
+		this.export = export;
 	}
 }
