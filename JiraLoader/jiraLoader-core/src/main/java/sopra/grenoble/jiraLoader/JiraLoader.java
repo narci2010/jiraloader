@@ -283,58 +283,6 @@ public class JiraLoader {
 						row.getCell(6).setCellStyle(tabStyle);
 					}
 				}
-
-
-				/*for (int j = 1 + i; j <= worklogList.size() + i; j++) {
-
-					if(worklogList.get(j-1-i).getUpdateDate().isAfter(twoDaysAgo.getTime())){
-						row = sheet.createRow(j);
-						row.createCell(0).setCellValue(issue.getKey());
-						row.getCell(0).setCellStyle(tabStyle);
-
-						row.createCell(1).setCellValue(issue.getSummary());
-						row.getCell(1).setCellStyle(tabStyle);
-
-						row.createCell(2).setCellValue(worklogList.get(j - 1 - i).getUpdateAuthor().getDisplayName());
-						row.getCell(2).setCellStyle(tabStyle);
-						row.createCell(3).setCellValue(worklogList.get(j - 1 - i).getComment());
-						row.getCell(3).setCellStyle(tabStyle);
-						if (worklogList.get(j - 1 - i).getMinutesSpent() != null) {
-							if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 == 0) {
-								row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h");
-								row.getCell(4).setCellStyle(tabStyle);
-							} else if (worklogList.get(j - 1 - i).getMinutesSpent() <= 59) {
-								row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() + "m");
-								row.getCell(4).setCellStyle(tabStyle);
-							} else if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 != 0 && worklogList.get(j - 1 - i).getMinutesSpent() > 60) {
-								row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h" + worklogList.get(j - 1 - i).getMinutesSpent() % 60 + "m");
-								row.getCell(4).setCellStyle(tabStyle);
-							}
-						} else {
-							row.createCell(4).setCellValue("No time spent set");
-							row.getCell(4).setCellStyle(tabStyle);
-						}
-
-						if (issue.getTimeTracking().getRemainingEstimateMinutes() != null) {
-							if (issue.getTimeTracking().getRemainingEstimateMinutes() % 60 == 0) {
-								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h");
-								row.getCell(5).setCellStyle(tabStyle);
-							} else if (issue.getTimeTracking().getRemainingEstimateMinutes() <= 59) {
-								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() + "m");
-								row.getCell(5).setCellStyle(tabStyle);
-							} else if (issue.getTimeTracking().getRemainingEstimateMinutes() > 60 && issue.getTimeTracking().getRemainingEstimateMinutes() % 60 != 0) {
-								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h" + issue.getTimeTracking().getRemainingEstimateMinutes() % 60 + "m");
-								row.getCell(5).setCellStyle(tabStyle);
-							}
-
-						} else {
-							row.createCell(5).setCellValue("No RAE set");
-							row.getCell(5).setCellStyle(tabStyle);
-						}
-						row.createCell(6).setCellValue(worklogList.get(j - 1 - i).getUpdateDate().toString().substring(0, 10));
-						row.getCell(6).setCellStyle(tabStyle);
-					}
-				}*/
 			}
 		} else {
 			LOG.warn("Careful, empty issue list");
