@@ -84,8 +84,8 @@ public class JiraLoaderTest extends JiraLoader {
 	@Test
 	public void testImportSheetPage0AndConfSheetPage1() throws Exception {
 		String path = "excelFilesValidationTests/Import_JIRA_PAGE_INVERSE.xlsx";
-
 		URL excelFileUrl = ClassLoader.getSystemClassLoader().getResource(path);
+		System.out.println(excelFileUrl);
 		FileInputStream fis = new FileInputStream(excelFileUrl.getPath());
 		assertNotNull(fis);
 

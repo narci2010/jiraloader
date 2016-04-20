@@ -12,6 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author cmouilleron Main class to import excel document in JIRA application
@@ -88,15 +85,17 @@ public class JiraLoader {
 
 
 		if (issueList.isEmpty()) {
-			LOG.warn("Issue list is empty, please check Jira");
+			LOG.warn("Issue list is EMPTY, please check Jira");
+			LOG.warn("export status : SUCCESS but nothing was done");
+		} else {
+			LOG.info("###################################################");
+			LOG.info("STEP 4 - Writing data");
+			writeDataTwo(issueList);
+
+			LOG.info("###################################################");
+			LOG.info("New file created : \"export-worklog-jira.xls\" ");
+			LOG.info("Well done,export status : SUCCESS");
 		}
-
-		LOG.info("###################################################");
-		LOG.info("STEP 4 - Writing data");
-		writeDataTwo(issueList);
-
-		LOG.info("###################################################");
-		LOG.info("Well done, extraction successful");
 	}
 
 	public List<Issue> loadWorkLogData() throws IOException, URISyntaxException {
@@ -105,16 +104,22 @@ public class JiraLoader {
 		jiraConnection.openConnection();
 		String projectName = jiraUserDatasBean.getProjectName();
 		NullProgressMonitor pm = new NullProgressMonitor();
+
 		//Load data
 		List<Issue> issueList = new ArrayList<>();
-		String jqlSearch = "project=\"" + projectName + "\"";
-		LOG.info("Search : " + jqlSearch);
-		SearchResult searchResult = jiraConnection.getSearchClient().searchJql(jqlSearch, pm);
+		String jqlSearch = "project=\"" + projectName + "\" ORDER BY updated DESC";
+		SearchResult searchResult = jiraConnection.getSearchClient().searchJql(jqlSearch, 1, 0, pm);
+
+		LOG.info("Search request : " + jqlSearch);
+		LOG.info("Total issues : " + searchResult.getTotal());
+
+		searchResult = jiraConnection.getSearchClient().searchJql(jqlSearch, 100, 0, pm);
 
 		//Set date for export
-		Date today = Date.from(ZonedDateTime.now().toInstant());
-		long dayInMs = 1000 * 60 * 60 * 24 * 2;
-		Date twoDaysAgo = new Date(today.getTime() - dayInMs);
+		DateTime today = new DateTime().withTimeAtStartOfDay().plusDays(1);
+
+		long dayInMs = 1000 * 60 * 60 * 24 * 3;
+		Date twoDaysAgo = new Date(today.getMillis() - dayInMs);
 
 
 		for (BasicIssue basicIssue : searchResult.getIssues()) {
@@ -200,59 +205,136 @@ public class JiraLoader {
 		row.createCell(6).setCellValue("Update date");
 		row.getCell(6).setCellStyle(headerStyle);
 
+		DateTime today = new DateTime().withTimeAtStartOfDay().plusDays(1);
+		long dayInMs = 1000 * 60 * 60 * 24 * 3;
+		Date twoDaysAgo = new Date(today.getMillis() - dayInMs);
 
 		// Create others rows
+		LOG.info("Insert data");
 		if (issueList != null) {
 			for (int i = 0; i < issueList.size(); i++) {
 				Issue issue = issueList.get(i);
-				List<Worklog> worklogList = (List<Worklog>) issue.getWorklogs();
-				for (int j = 1 + i; j <= worklogList.size() + i; j++) {
-					row = sheet.createRow(j);
-					row.createCell(0).setCellValue(issue.getKey());
-					row.getCell(0).setCellStyle(tabStyle);
+				//		List<Worklog> worklogList = (List<Worklog>) issue.getWorklogs();
+				for (Iterator<Worklog> worklogs = issue.getWorklogs().iterator(); worklogs.hasNext(); ) {
+					Worklog worklog = worklogs.next();
+					// Initialize variable
+					int lastRowNum = sheet.getLastRowNum();
+					lastRowNum++;
 
-					row.createCell(1).setCellValue(issue.getSummary());
-					row.getCell(1).setCellStyle(tabStyle);
+					//Checking update date
+					if (worklog.getUpdateDate().isAfter(twoDaysAgo.getTime())) {
 
-					row.createCell(2).setCellValue(worklogList.get(j - 1 - i).getUpdateAuthor().getDisplayName());
-					row.getCell(2).setCellStyle(tabStyle);
-					row.createCell(3).setCellValue(worklogList.get(j - 1 - i).getComment());
-					row.getCell(3).setCellStyle(tabStyle);
-					if (worklogList.get(j - 1 - i).getMinutesSpent() != null) {
-						if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 == 0) {
-							row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h");
-							row.getCell(4).setCellStyle(tabStyle);
-						} else if (worklogList.get(j - 1 - i).getMinutesSpent() <= 59) {
-							row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() + "m");
-							row.getCell(4).setCellStyle(tabStyle);
-						} else if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 != 0 && worklogList.get(j - 1 - i).getMinutesSpent() > 60) {
-							row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h" + worklogList.get(j - 1 - i).getMinutesSpent() % 60 + "m");
+						// Create new row
+						row = sheet.createRow(lastRowNum);
+
+						// Create first cell : the Issue's KEY
+						row.createCell(0).setCellValue(issue.getKey());
+						row.getCell(0).setCellStyle(tabStyle);
+
+						// Create second cell : the Issue's summary
+						row.createCell(1).setCellValue(issue.getSummary());
+						row.getCell(1).setCellStyle(tabStyle);
+
+						//Create third cell : the Worklog's update author
+						row.createCell(2).setCellValue(worklog.getUpdateAuthor().getDisplayName());
+						row.getCell(2).setCellStyle(tabStyle);
+
+						// Create fourth cell : the Worklog's comment
+						row.createCell(3).setCellValue(worklog.getComment());
+						row.getCell(3).setCellStyle(tabStyle);
+
+						// Create 5th cell : Worklog's minutes spent
+						if (worklog.getMinutesSpent() != null) {
+							if (worklog.getMinutesSpent() % 60 == 0) {
+								row.createCell(4).setCellValue(worklog.getMinutesSpent() / 60 + "h");
+								row.getCell(4).setCellStyle(tabStyle);
+							} else if (worklog.getMinutesSpent() <= 59) {
+								row.createCell(4).setCellValue(worklog.getMinutesSpent() + "m");
+								row.getCell(4).setCellStyle(tabStyle);
+							} else if (worklog.getMinutesSpent() % 60 != 0 && worklog.getMinutesSpent() > 60) {
+								row.createCell(4).setCellValue(worklog.getMinutesSpent() / 60 + "h" + worklog.getMinutesSpent() % 60 + "m");
+								row.getCell(4).setCellStyle(tabStyle);
+							}
+						} else {
+							row.createCell(4).setCellValue("No time spent set");
 							row.getCell(4).setCellStyle(tabStyle);
 						}
-					} else {
-						row.createCell(4).setCellValue("No time spent set");
-						row.getCell(4).setCellStyle(tabStyle);
-					}
 
-					if (issue.getTimeTracking().getRemainingEstimateMinutes() != null) {
-						if (issue.getTimeTracking().getRemainingEstimateMinutes() % 60 == 0) {
-							row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h");
-							row.getCell(5).setCellStyle(tabStyle);
-						} else if (issue.getTimeTracking().getRemainingEstimateMinutes() <= 59) {
-							row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() + "m");
-							row.getCell(5).setCellStyle(tabStyle);
-						} else if (issue.getTimeTracking().getRemainingEstimateMinutes() > 60 && issue.getTimeTracking().getRemainingEstimateMinutes() % 60 != 0) {
-							row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h" + issue.getTimeTracking().getRemainingEstimateMinutes() % 60 + "m");
+						// Create 6th cell : RAE
+						if (issue.getTimeTracking().getRemainingEstimateMinutes() != null) {
+							if (issue.getTimeTracking().getRemainingEstimateMinutes() % 60 == 0) {
+								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h");
+								row.getCell(5).setCellStyle(tabStyle);
+							} else if (issue.getTimeTracking().getRemainingEstimateMinutes() <= 59) {
+								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() + "m");
+								row.getCell(5).setCellStyle(tabStyle);
+							} else if (issue.getTimeTracking().getRemainingEstimateMinutes() > 60 && issue.getTimeTracking().getRemainingEstimateMinutes() % 60 != 0) {
+								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h" + issue.getTimeTracking().getRemainingEstimateMinutes() % 60 + "m");
+								row.getCell(5).setCellStyle(tabStyle);
+							}
+
+						} else {
+							row.createCell(5).setCellValue("No RAE set");
 							row.getCell(5).setCellStyle(tabStyle);
 						}
 
-					} else {
-						row.createCell(5).setCellValue("No RAE set");
-						row.getCell(5).setCellStyle(tabStyle);
+						// Create the last cell : Worklog's update date
+						row.createCell(6).setCellValue(worklog.getUpdateDate().toString().substring(0, 10));
+						row.getCell(6).setCellStyle(tabStyle);
 					}
-					row.createCell(6).setCellValue(worklogList.get(j - 1 - i).getUpdateDate().toString().substring(0, 10));
-					row.getCell(6).setCellStyle(tabStyle);
 				}
+
+
+				/*for (int j = 1 + i; j <= worklogList.size() + i; j++) {
+
+					if(worklogList.get(j-1-i).getUpdateDate().isAfter(twoDaysAgo.getTime())){
+						row = sheet.createRow(j);
+						row.createCell(0).setCellValue(issue.getKey());
+						row.getCell(0).setCellStyle(tabStyle);
+
+						row.createCell(1).setCellValue(issue.getSummary());
+						row.getCell(1).setCellStyle(tabStyle);
+
+						row.createCell(2).setCellValue(worklogList.get(j - 1 - i).getUpdateAuthor().getDisplayName());
+						row.getCell(2).setCellStyle(tabStyle);
+						row.createCell(3).setCellValue(worklogList.get(j - 1 - i).getComment());
+						row.getCell(3).setCellStyle(tabStyle);
+						if (worklogList.get(j - 1 - i).getMinutesSpent() != null) {
+							if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 == 0) {
+								row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h");
+								row.getCell(4).setCellStyle(tabStyle);
+							} else if (worklogList.get(j - 1 - i).getMinutesSpent() <= 59) {
+								row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() + "m");
+								row.getCell(4).setCellStyle(tabStyle);
+							} else if (worklogList.get(j - 1 - i).getMinutesSpent() % 60 != 0 && worklogList.get(j - 1 - i).getMinutesSpent() > 60) {
+								row.createCell(4).setCellValue(worklogList.get(j - 1 - i).getMinutesSpent() / 60 + "h" + worklogList.get(j - 1 - i).getMinutesSpent() % 60 + "m");
+								row.getCell(4).setCellStyle(tabStyle);
+							}
+						} else {
+							row.createCell(4).setCellValue("No time spent set");
+							row.getCell(4).setCellStyle(tabStyle);
+						}
+
+						if (issue.getTimeTracking().getRemainingEstimateMinutes() != null) {
+							if (issue.getTimeTracking().getRemainingEstimateMinutes() % 60 == 0) {
+								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h");
+								row.getCell(5).setCellStyle(tabStyle);
+							} else if (issue.getTimeTracking().getRemainingEstimateMinutes() <= 59) {
+								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() + "m");
+								row.getCell(5).setCellStyle(tabStyle);
+							} else if (issue.getTimeTracking().getRemainingEstimateMinutes() > 60 && issue.getTimeTracking().getRemainingEstimateMinutes() % 60 != 0) {
+								row.createCell(5).setCellValue(issue.getTimeTracking().getRemainingEstimateMinutes() / 60 + "h" + issue.getTimeTracking().getRemainingEstimateMinutes() % 60 + "m");
+								row.getCell(5).setCellStyle(tabStyle);
+							}
+
+						} else {
+							row.createCell(5).setCellValue("No RAE set");
+							row.getCell(5).setCellStyle(tabStyle);
+						}
+						row.createCell(6).setCellValue(worklogList.get(j - 1 - i).getUpdateDate().toString().substring(0, 10));
+						row.getCell(6).setCellStyle(tabStyle);
+					}
+				}*/
 			}
 		} else {
 			LOG.warn("Careful, empty issue list");
@@ -262,10 +344,10 @@ public class JiraLoader {
 		for (int i = 0; i <= 6; i++) {
 			sheet.autoSizeColumn(i);
 		}
-		for (int i = 1; i < sheet.getLastRowNum(); i++) {
+		for (long i = 1; i < sheet.getLastRowNum(); i++) {
 			for (int j = 0; j < 7; j++) {
 				if (i % 2 == 1) {
-					row = sheet.getRow(i);
+					row = sheet.getRow((int) i);
 					row.getCell(j).setCellStyle(tabStyle2);
 				}
 			}
@@ -282,6 +364,10 @@ public class JiraLoader {
 			LOG.warn(e.getStackTrace().toString());
 			LOG.warn("Error during data saving");
 		}
+	}
+
+	public int incrementeI(int i) {
+		return i++;
 	}
 
 	/**
