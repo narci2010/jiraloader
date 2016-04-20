@@ -41,7 +41,7 @@ public class IssueEpicService extends IssueAbstractGenericService implements IIs
 
 	@Override
 	public Optional<BasicIssue> getByName(String epicName, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
-		String jpqlFormat = String.format("project= " + projectName + " and issuetype=epic and cf[15895]=" + epicName);
+		String jpqlFormat = String.format("project= \"" + projectName + "\" and issuetype=epic and cf[15895]= \"" + epicName + "\"");
 		SearchResult searchResult = jiraConnection.getSearchClient().searchJql(jpqlFormat, pm);
 		List<Issue> issueList = new ArrayList<>();
 		for (BasicIssue basicIssue : searchResult.getIssues()) {

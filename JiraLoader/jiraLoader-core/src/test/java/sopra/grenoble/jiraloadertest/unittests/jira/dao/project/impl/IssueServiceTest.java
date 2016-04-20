@@ -1,7 +1,9 @@
 package sopra.grenoble.jiraloadertest.unittests.jira.dao.project.impl;
 
-import com.atlassian.jira.rest.client.NullProgressMonitor;
-import com.atlassian.jira.rest.client.domain.*;
+import com.atlassian.jira.rest.client.domain.BasicIssue;
+import com.atlassian.jira.rest.client.domain.Issue;
+import com.atlassian.jira.rest.client.domain.IssueLink;
+import com.atlassian.jira.rest.client.domain.Version;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +23,9 @@ import sopra.grenoble.jiraLoader.jira.dao.project.IVersionService;
 import sopra.grenoble.jiraLoaderconfiguration.ApplicationConfiguration;
 
 import java.net.URISyntaxException;
-import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -438,34 +441,6 @@ public class IssueServiceTest {
             issueSrv.removeIssue(basicIssue.getKey(), true);
             issueSrv.removeIssue(basicIssue2.getKey(), true);
         }
-    }
-
-    @Test
-    public void testEnCarton() throws Exception {
-        List<Issue> issueList = new ArrayList<>();
-        String jqlSearch = "project=\"" + projectTestName + "\"";
-        SearchResult searchResult = jiraConnection.getSearchClient().searchJql(jqlSearch, new NullProgressMonitor());
-        System.out.println(jqlSearch);
-        Date today = Date.from(ZonedDateTime.now().toInstant());
-        System.out.println(today);
-        for (BasicIssue basicIssue : searchResult.getIssues()) {
-            Issue issue = issueSrv.getByKey(basicIssue.getKey(), projectTestName);
-            Iterable<Worklog> worklogList = issue.getWorklogs();
-            worklogList.forEach(worklog -> {
-                if (worklog.getUpdateDate().isBeforeNow()) {
-                    if (!issueList.contains(issue)) {
-                        issueList.add(issue);
-                    }
-                }
-            });
-        }
-        issueList.forEach(issue -> issue.getWorklogs().forEach(worklog -> {
-            System.out.println(worklog.getUpdateAuthor());
-            System.out.println(worklog.getMinutesSpent());
-            System.out.println(issue.getTimeTracking().getRemainingEstimateMinutes());
-            System.out.println(worklog.getComment());
-
-        }));
     }
 }
 

@@ -17,10 +17,7 @@ import sopra.grenoble.jiraLoader.jira.dao.project.IIssueEpicService;
 import sopra.grenoble.jiraLoader.jira.dao.project.IIssueService;
 import sopra.grenoble.jiraLoader.jira.dao.project.IVersionService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class IssueStoryAndSubTaskService extends IssueAbstractGenericService implements IIssueService {
@@ -220,9 +217,6 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 		for (BasicIssue basicIssue : sr.getIssues()) {
 			//JIRA can return issue with another char before or after the summary. Thus we need to check the name
 			Issue issue = getByKey(basicIssue.getKey(), projectName);
-			boolean test = issueName.equals(issue.getSummary());
-			System.out.println(issueName + " and " + issue.getSummary());
-			System.out.println(test);
 			if (issueName.equals(issue.getSummary())) {
 				issueList.add(issue);
 			}
@@ -296,6 +290,24 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 			this.updateIssueInJira(issue, lstFields);
 		} else if (new Long(10007).equals(issue.getStatus().getId())) {
 			LOG.info("Story was completed, nothing was updated");
+		}
+		// If issue type = Story && allowing recursive update of sub-task via story = true
+		if (excelConfigurationDatas.isUpdateSubTasksOutOfFile() && "Story".equals(issue.getIssueType().getName())) {
+			// Get list of sub-tasks for this story
+			if (issue.getSubtasks() != null) {
+				for (Iterator<Subtask> subtaskIterator = issue.getSubtasks().iterator(); subtaskIterator.hasNext(); ) {
+					Subtask subTask = subtaskIterator.next();
+					try {
+						Issue subTaskIssue = getByKey(subTask.getIssueKey(), projectName);
+						updateIssue(subTaskIssue.getKey(), projectName, priority);
+					} catch (IssueNotFoundException e) {
+						LOG.info(e.getStackTrace().toString());
+					}
+
+				}
+			}
+
+
 		}
 	}
 	

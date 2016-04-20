@@ -20,6 +20,8 @@ public class ExcelDatas {
 	private boolean allowUpdate = false;
 
 	private boolean updateStoryAndSubTasks = false;
+
+	private boolean updateSubTasksOutOfFile = false;
 	
 	public boolean isSearchStoryByNameBeforeCreate() {
 		return searchStoryByNameBeforeCreate;
@@ -43,5 +45,13 @@ public class ExcelDatas {
 
 	public void setUpdateStoryAndSubTasks(boolean updateStoryAndSubTasks) {
 		this.updateStoryAndSubTasks = updateStoryAndSubTasks;
+	}
+
+	public boolean isUpdateSubTasksOutOfFile() {
+		return updateSubTasksOutOfFile;
+	}
+
+	public void setUpdateSubTasksOutOfFile(boolean updateSubTasksOutOfFile) {
+		this.updateSubTasksOutOfFile = updateSubTasksOutOfFile;
 	}
 }

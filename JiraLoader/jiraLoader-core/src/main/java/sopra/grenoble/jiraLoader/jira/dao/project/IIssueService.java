@@ -29,4 +29,5 @@ public interface IIssueService extends IIssueGenericService {
 	void updateIssue(String issueKey, String projectName, String priority)
 			throws IssueNotFoundException, JiraGeneralException;
 
+
 }

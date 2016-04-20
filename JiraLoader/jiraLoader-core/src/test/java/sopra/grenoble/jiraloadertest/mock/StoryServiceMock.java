@@ -13,6 +13,7 @@ import java.util.Optional;
 
 public class StoryServiceMock implements IIssueService {
 
+
 	@Override
 	public Issue getByKey(String key, String projectName) throws IssueNotFoundException, JiraIssueTypeException {
 

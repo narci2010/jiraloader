@@ -1,37 +1,8 @@
 package sopra.grenoble.jiraLoader.jira.connection;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.ws.rs.core.UriBuilder;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.atlassian.jira.rest.client.AuthenticationHandler;
-import com.atlassian.jira.rest.client.ComponentRestClient;
-import com.atlassian.jira.rest.client.IssueRestClient;
-import com.atlassian.jira.rest.client.MetadataRestClient;
-import com.atlassian.jira.rest.client.ProjectRestClient;
-import com.atlassian.jira.rest.client.ProjectRolesRestClient;
-import com.atlassian.jira.rest.client.SearchRestClient;
-import com.atlassian.jira.rest.client.SessionRestClient;
-import com.atlassian.jira.rest.client.UserRestClient;
-import com.atlassian.jira.rest.client.VersionRestClient;
+import com.atlassian.jira.rest.client.*;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyComponentRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyIssueRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyMetadataRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyProjectRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyProjectRolesRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseySearchRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseySessionRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyUserRestClient;
-import com.atlassian.jira.rest.client.internal.jersey.JerseyVersionRestClient;
+import com.atlassian.jira.rest.client.internal.jersey.*;
 import com.sun.jersey.api.client.AsyncViewResource;
 import com.sun.jersey.api.client.AsyncWebResource;
 import com.sun.jersey.api.client.ViewResource;
@@ -39,10 +10,19 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.ApacheHttpClientHandler;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import sopra.grenoble.jiraLoader.configurationbeans.JiraUserDatas;
 import sopra.grenoble.jiraLoader.jira.parsers.IMetadataRestClientV2;
 import sopra.grenoble.jiraLoader.jira.parsers.MetadataRestV2Client;
+
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author cmouilleron
@@ -87,7 +67,6 @@ public class JiraRestClientV2Impl implements IJiraRestClientV2 {
 	public void openConnection() throws URISyntaxException {
 		LOG.info("Opening connection on URI : " + configuration.getUri());
 		LOG.info("Using user : " + configuration.getUsername());
-		
 		this.serverUri = new URI(configuration.getUri());
 		this.baseUri = UriBuilder.fromUri(serverUri).path("/rest/api/latest").build();
 		

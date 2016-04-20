@@ -435,6 +435,11 @@ public class JiraLoader {
 			return false;
 		}));
 
+		excelFileDatasBean.setUpdateSubTasksOutOfFile(excelLoader.readBooleanCellContent(5, 5).orElseGet(() -> {
+			LOG.warn("No configuration at line 5,5. Set default value to false");
+			return false;
+		}));
+
 		return true;
 	}
 
