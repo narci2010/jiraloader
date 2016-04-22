@@ -93,7 +93,6 @@ public class JiraLoader {
 			writeDataTwo(issueList);
 
 			LOG.info("###################################################");
-			LOG.info("New file created : \"export-worklog-jira.xls\" ");
 			LOG.info("Well done,export status : SUCCESS");
 		}
 	}
@@ -138,9 +137,14 @@ public class JiraLoader {
 	}
 
 	public void writeDataTwo(List<Issue> issueList) throws IOException {
+		// Init date
+		DateTime today = new DateTime().withTimeAtStartOfDay().plusDays(1);
+		long dayInMs = 1000 * 60 * 60 * 24 * 3;
+		Date twoDaysAgo = new Date(today.getMillis() - dayInMs);
+
 		// Create excel file
 		LOG.info("Creating excel file ....");
-		FileOutputStream fileOut = new FileOutputStream("export-worklog-jira.xls");
+		FileOutputStream fileOut = new FileOutputStream("export-worklog-jira-" + new DateTime().withTimeAtStartOfDay().toString().substring(0, 10) + ".xls");
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet("Export work log Jira");
 		HSSFRow row = sheet.createRow((short) 0);
@@ -162,19 +166,6 @@ public class JiraLoader {
 		tabStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
 		tabStyle.setTopBorderColor(HSSFColor.BLACK.index);
 
-		HSSFCellStyle tabStyle2 = workbook.createCellStyle();
-		tabStyle2.setWrapText(true);
-		tabStyle2.setWrapText(true);
-		tabStyle2.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
-		tabStyle2.setBottomBorderColor(HSSFColor.BLACK.index);
-		tabStyle2.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-		tabStyle2.setLeftBorderColor(HSSFColor.BLACK.index);
-		tabStyle2.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-		tabStyle2.setRightBorderColor(HSSFColor.BLACK.index);
-		tabStyle2.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-		tabStyle2.setTopBorderColor(HSSFColor.BLACK.index);
-		tabStyle2.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-		tabStyle2.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
 		HSSFCellStyle headerStyle = workbook.createCellStyle();
 		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
@@ -205,9 +196,7 @@ public class JiraLoader {
 		row.createCell(6).setCellValue("Update date");
 		row.getCell(6).setCellStyle(headerStyle);
 
-		DateTime today = new DateTime().withTimeAtStartOfDay().plusDays(1);
-		long dayInMs = 1000 * 60 * 60 * 24 * 3;
-		Date twoDaysAgo = new Date(today.getMillis() - dayInMs);
+
 
 		// Create others rows
 		LOG.info("Insert data");
@@ -292,14 +281,6 @@ public class JiraLoader {
 		for (int i = 0; i <= 6; i++) {
 			sheet.autoSizeColumn(i);
 		}
-		for (long i = 1; i < sheet.getLastRowNum(); i++) {
-			for (int j = 0; j < 7; j++) {
-				if (i % 2 == 1) {
-					row = sheet.getRow((int) i);
-					row.getCell(j).setCellStyle(tabStyle2);
-				}
-			}
-		}
 
 		// Save & close file
 		try {
@@ -308,6 +289,7 @@ public class JiraLoader {
 			fileOut.flush();
 			fileOut.close();
 			LOG.info("Save data in file : OK");
+			LOG.info("File : export-worklog-jira-" + new DateTime().withTimeAtStartOfDay().toString().substring(0, 10) + ".xls");
 		} catch (IOException e) {
 			LOG.warn(e.getStackTrace().toString());
 			LOG.warn("Error during data saving");
