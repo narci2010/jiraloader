@@ -157,27 +157,25 @@ public class JiraLoader {
 
 		HSSFCellStyle tabStyle = workbook.createCellStyle();
 		tabStyle.setWrapText(true);
-		tabStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		tabStyle.setBottomBorderColor(HSSFColor.BLACK.index);
-		tabStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		tabStyle.setLeftBorderColor(HSSFColor.BLACK.index);
-		tabStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
 		tabStyle.setRightBorderColor(HSSFColor.BLACK.index);
-		tabStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+		tabStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		tabStyle.setTopBorderColor(HSSFColor.BLACK.index);
 
 
 		HSSFCellStyle headerStyle = workbook.createCellStyle();
-		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setBottomBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setLeftBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setRightBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+		headerStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setTopBorderColor(HSSFColor.BLACK.index);
-		headerStyle.setFillForegroundColor(HSSFColor.ROYAL_BLUE.index);
-		headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
 		// Create header
 		LOG.info("Header creation");

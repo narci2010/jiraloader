@@ -226,7 +226,7 @@ public class IssueStoryAndSubTaskService extends IssueAbstractGenericService imp
 				LOG.warn("No issue has been found with this summary : " + issueName + " , please check Jira & Excel file if you expected one");
 				return Optional.empty();
 			} else {
-				LOG.warn("Be careful, there are more than one subtask with the same summary ");
+				LOG.warn("Be careful, there are more than one task with the same summary ");
 				return Optional.empty();
 			}
 		} else {

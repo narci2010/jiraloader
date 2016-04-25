@@ -66,8 +66,7 @@ public class StoryWrapper extends AbstractWrapper<Story> {
 	}
 
 
-	private Optional<BasicIssue> getStoryIfExist(String fullStoryName, String projectName) throws JiraIssueTypeException, IssueNotFoundException {
-		String storyName = fullStoryName.split("\\|")[0].trim();
-		return storySrv.getByStartingName(storyName, projectName);
+	private Optional<BasicIssue> getStoryIfExist(String clientReference, String projectName) throws JiraIssueTypeException, IssueNotFoundException {
+		return storySrv.getByStartingName(clientReference, projectName);
 	}
 }
