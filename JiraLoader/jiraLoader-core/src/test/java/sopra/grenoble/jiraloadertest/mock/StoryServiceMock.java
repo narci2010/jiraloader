@@ -38,7 +38,7 @@ public class StoryServiceMock implements IIssueService {
 
 	@Override
 	public BasicIssue createStory(String projectName, String epicName, String versionName, String clientReference, String resume,
-								  String description, String priority, String componentName, String versionCorrected, String linkTargetName) throws JiraGeneralException {
+								  String description, String priority, String componentName, String versionCorrected, String linkTargetName, String estimation) throws JiraGeneralException {
 		BasicIssue bi = null;
 		try {
 			bi = new BasicIssue(new URI("uri"), "1", 1L);

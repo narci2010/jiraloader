@@ -108,25 +108,4 @@ public class JiraLoaderTest extends JiraLoader {
 		writeDataTwo(issueList);
 
 	}
-
-	@Test
-	public void testListNullWriteDataOk() throws IOException {
-		//Set parameters
-		List<Issue> issueList = new ArrayList<>();
-		issueList = null;
-		writeDataTwo(issueList);
-		//Load file
-		FileInputStream fileInputStream = new FileInputStream("export-worklog-jira.xls");
-		HSSFWorkbook workbook = new HSSFWorkbook(fileInputStream);
-		HSSFSheet sheet = workbook.getSheetAt(0);
-		HSSFRow row = sheet.getRow(0);
-		// Check header
-		assertEquals("Issue".equals(row.getCell(0).getStringCellValue()), true);
-		assertEquals("Summary".equals(row.getCell(1).getStringCellValue()), true);
-		assertEquals("Author".equals(row.getCell(2).getStringCellValue()), true);
-		assertEquals("Comment".equals(row.getCell(3).getStringCellValue()), true);
-		assertEquals("Time spent".equals(row.getCell(4).getStringCellValue()), true);
-		assertEquals("RAE".equals(row.getCell(5).getStringCellValue()), true);
-		assertEquals("Update date".equals(row.getCell(6).getStringCellValue()), true);
-	}
 }

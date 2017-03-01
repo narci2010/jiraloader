@@ -5,20 +5,25 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author cmouilleron
- *
  */
 public class SubTasks extends GenericModel {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SubTasks.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SubTasks.class);
 
-	@Override
-	public boolean validate() {
-		if (resume == null) return false;
-		if (composantName == null) return false;
-		if (clientReference != null) {
-			LOG.error("The field Client Reference in excel should not be set");
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean validate() {
+        if (resume == null) {
+            LOG.error("SubTasks validation : resume cannot be empty");
+            return false;
+        }
+        if (composantName == null) {
+            LOG.error("SubTasks validation : composantName cannot be empty");
+            return false;
+        }
+        if (clientReference != null) {
+            LOG.error("SubTasks validation : The field Client Reference in excel should not be set");
+            return false;
+        }
+        return true;
+    }
 }
